@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ photo.title }}</h2>
+
+<img src="" />
+
+<p>{{ photo.caption }}</p>
+
+<ul>
+    {% for set in photo.sets.all %}
+    <li><a href="{% url photoset set.id %}">{{ set }}</a></li>
+    {% endfor %}
+</ul>
+
+<ul>
+    {% for tag in photo.tags.all %}
+        <li><a href="{% url tag tag.id %}">{{ tag }}</a></li>
+    {% endfor %}
+</ul>
+
+<ul>
+    {% for person in photo.people.all %}
+        <li><a href="{% url person person.id %}">{{ person }}</a></li>
+    {% endfor %}
+</ul>
+
+<ul>
+    {% for place in photo.places.all %}
+        <li><a href="{% url place place.id %}">{{ place }}</a></li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

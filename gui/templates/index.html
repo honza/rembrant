@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <ul>
+    {% for photo in photos %}
+        <li>
+        <a href="{% url single photo.id %}">{{ photo.filename }}</a> 
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}
