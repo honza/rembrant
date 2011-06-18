@@ -71,7 +71,6 @@ Dependencies
 ------------
 
 * Boto - AWS Python library
-* pyYAML
 * Django - for templates
 * Python Imaging Library (PIL)
 

@@ -1,5 +1,4 @@
 Django==1.3
 PIL
-pyYAML
 boto
 south
