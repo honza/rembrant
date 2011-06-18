@@ -1,3 +1,4 @@
+import json
 from django.db import models
 
 
@@ -7,12 +8,18 @@ class Tag(models.Model):
     def __unicode__(self):
         return self.name
 
+    def to_json(self):
+        return {'name': self.name}
+
 
 class Set(models.Model):
     name = models.CharField(max_length=200)
 
     def __unicode__(self):
         return self.name
+
+    def to_json(self):
+        return {'name': self.name}
 
 
 class Person(models.Model):
@@ -21,12 +28,18 @@ class Person(models.Model):
     def __unicode__(self):
         return self.name
 
+    def to_json(self):
+        return {'name': self.name}
+
 
 class Place(models.Model):
     name = models.CharField(max_length=200)
 
     def __unicode__(self):
         return self.name
+
+    def to_json(self):
+        return {'name': self.name}
 
 
 class Photo(models.Model):
@@ -40,3 +53,23 @@ class Photo(models.Model):
 
     def __unicode__(self):
         return self.filename
+
+    def to_json(self):
+        tags = self.tags.all()
+        tags = [t.to_json() for t in tags]
+        sets = self.sets.all()
+        sets = [s.to_json() for s in sets]
+        people = self.people.all()
+        people = [p.to_json() for p in people]
+        places = self.places.all()
+        places = [p.to_json() for p in places]
+        d = {
+            'title': self.title,
+            'filename': self.filename,
+            'caption': self.caption,
+            'tags': tags,
+            'sets': sets,
+            'people': people,
+            'places': places
+        }
+        return json.dumps(d)
