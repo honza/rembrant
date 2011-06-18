@@ -73,3 +73,26 @@ class Photo(models.Model):
             'places': places
         }
         return json.dumps(d)
+
+    @classmethod
+    def from_json(self, string):
+        d = json.loads(string)
+        ph = self.objects.create(
+            filename=d['filename'],
+            title=d['title'],
+            caption=d['caption']
+        )
+        for t in d['tags']:
+            o = Tag.objects.get_or_create(name=t['name'])[0]
+            ph.tags.add(o)
+        for s in d['sets']:
+            o = Set.objects.get_or_create(name=s['name'])[0]
+            ph.sets.add(o)
+        for p in d['people']:
+            o = Person.objects.get_or_create(name=p['name'])[0]
+            ph.people.add(o)
+        for p in d['places']:
+            o = Place.objects.get_or_create(name=p['name'])[0]
+            ph.places.add(o)
+
+        ph.save()
