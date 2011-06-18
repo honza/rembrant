@@ -4,9 +4,9 @@
 
 <h2>{{ photo.title }}</h2>
 
-<img src="" />
-
 <p>{{ photo.caption }}</p>
+
+<h3>Sets</h3>
 
 <ul>
     {% for set in photo.sets.all %}
@@ -14,17 +14,23 @@
     {% endfor %}
 </ul>
 
+<h3>Tags</h3>
+
 <ul>
     {% for tag in photo.tags.all %}
         <li><a href="{% url tag tag.id %}">{{ tag }}</a></li>
     {% endfor %}
 </ul>
 
+<h3>People</h3>
+
 <ul>
     {% for person in photo.people.all %}
         <li><a href="{% url person person.id %}">{{ person }}</a></li>
     {% endfor %}
 </ul>
+
+<h3>Places</h3>
 
 <ul>
     {% for place in photo.places.all %}
