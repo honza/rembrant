@@ -1,21 +1,23 @@
 Rembrant
 ========
 
-Rembrant is a piece of software that helps you create online galleries. You
-run the software locally to create the gallery, add tags and collections and
-then you sync it to your online account on [AWS S3][s3].
+Rembrant is a piece of software that helps you organize your photos and create
+online galleries. You run the software locally to create the gallery, add tags
+and collections and then you sync it to your online account on [AWS S3][s3].
 
 Advantages
 ----------
 
+* Organize your photos in the browser
+* Structure saved in a single JSON file (unlike iPhoto's proprietary format)
 * You own your photographs, not Flickr or Picasa
 * The website is generated on your computer and not on the server, meaning that
   it's super fast. All the user has to do is download it.
 * Cheap - about $1 for 3GB of images (including bandwidth)
 * Flexible
-* Structure saved in a single JSON file
 * Familiar Django templates
-* GUI for adding captions, tags, sets, etc.
+* Your captions, tags, sets, etc are backed up
+* Customizable user interface
 
 Disadvantages
 -------------
