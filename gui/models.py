@@ -1,4 +1,5 @@
 import json
+import hashlib
 from django.db import models
 from django.db.models.signals import post_save
 
@@ -65,6 +66,7 @@ class Photo(models.Model):
     sets = models.ManyToManyField(Set)
     people = models.ManyToManyField(Person)
     places = models.ManyToManyField(Place)
+    sha = models.CharField(max_length=40, blank=True)
 
     def __unicode__(self):
         return self.filename
@@ -111,6 +113,23 @@ class Photo(models.Model):
             ph.places.add(o)
 
         ph.save()
+
+    @classmethod
+    def from_path(self, path):
+        sha = hashlib.sha1()
+        f = open(path)
+        while True:
+            try:
+                data = f.read(2**20)
+            except IOError:
+                data = None
+            if not data:
+                break
+            sha.update(data)
+        sha = sha.hexdigest()
+        # Don't import duplicates
+        if not self.objects.filter(sha=sha).exists():
+            self.objects.create(sha=sha, filename=path)
 
 
 from filesystem import Exporter

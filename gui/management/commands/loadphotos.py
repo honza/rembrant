@@ -13,4 +13,16 @@ class Command(BaseCommand):
             raise CommandError("The path specified in SOURCE is not valid.")
 
         self.stdout.write("%s\n" % SOURCE)
+        
+        paths = []
+        for p in os.walk(SOURCE, followlinks=False):
+            for f in p[2]:
+                if f.startswith('.'):
+                    continue
+                i = os.path.join(p[0], f)
+                paths.append(i)
+        for p in paths:
+            self.stdout.write("%s\n" % p)
+            Photo.from_path(p)
+
         self.stdout.write("It worked\n")
