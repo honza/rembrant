@@ -18,6 +18,7 @@ Advantages
 * Familiar Django templates
 * Your captions, tags, sets, etc are backed up
 * Customizable user interface
+* Your library can be version controlled (git, hg, etc)
 
 Disadvantages
 -------------
