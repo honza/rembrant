@@ -1,5 +1,8 @@
 import json
 from django.db import models
+from django.db.models.signals import post_save
+
+
 
 
 class Tag(models.Model):
@@ -9,7 +12,10 @@ class Tag(models.Model):
         return self.name
 
     def to_json(self):
-        return {'name': self.name}
+        return {
+            'id': self.id,
+            'name': self.name
+        }
 
 
 class Set(models.Model):
@@ -19,7 +25,10 @@ class Set(models.Model):
         return self.name
 
     def to_json(self):
-        return {'name': self.name}
+        return {
+            'id': self.id,
+            'name': self.name
+        }
 
 
 class Person(models.Model):
@@ -29,7 +38,10 @@ class Person(models.Model):
         return self.name
 
     def to_json(self):
-        return {'name': self.name}
+        return {
+            'id': self.id,
+            'name': self.name
+        }
 
 
 class Place(models.Model):
@@ -39,7 +51,10 @@ class Place(models.Model):
         return self.name
 
     def to_json(self):
-        return {'name': self.name}
+        return {
+            'id': self.id,
+            'name': self.name
+        }
 
 
 class Photo(models.Model):
@@ -56,13 +71,13 @@ class Photo(models.Model):
 
     def to_json(self):
         tags = self.tags.all()
-        tags = [t.to_json() for t in tags]
+        tags = [t.id for t in tags]
         sets = self.sets.all()
-        sets = [s.to_json() for s in sets]
+        sets = [s.id for s in sets]
         people = self.people.all()
-        people = [p.to_json() for p in people]
+        people = [p.id for p in people]
         places = self.places.all()
-        places = [p.to_json() for p in places]
+        places = [p.id for p in places]
         d = {
             'title': self.title,
             'filename': self.filename,
@@ -72,7 +87,7 @@ class Photo(models.Model):
             'people': people,
             'places': places
         }
-        return json.dumps(d)
+        return d
 
     @classmethod
     def from_json(self, string):
@@ -96,3 +111,11 @@ class Photo(models.Model):
             ph.places.add(o)
 
         ph.save()
+
+
+from filesystem import Exporter
+def save_json(sender, **kwargs):
+    Exporter()
+
+
+post_save.connect(save_json)
