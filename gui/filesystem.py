@@ -1,7 +1,10 @@
 # Provide functions to save/load data from json file
+import os
+import json
 from datetime import datetime
 from django.conf import settings
-from models import *
+import Image
+from models import Photo, Tag, Place, Set, Person
 
 
 class ImportException(Exception):
@@ -9,6 +12,10 @@ class ImportException(Exception):
 
 
 class ExportException(Exception):
+    pass
+
+
+class CacheException(Exception):
     pass
 
 
@@ -55,3 +62,39 @@ class Exporter(object):
         f = open(library, 'w')
         f.write(json.dumps(data, indent=4))
         f.close()
+
+
+class Thumbnailer(object):
+    """
+    Make sure all images have thumbnails present
+    """
+
+    def __init__(self):
+        self.source = getattr(settings, 'SOURCE', None)
+        self.cache = getattr(settings, 'CACHE_DIR', None)
+        if not self.source:
+            raise ImportException
+        if not self.cache:
+            raise CacheException
+
+        photos = Photo.objects.all()
+        # Widths: 800, 100
+        # Format: sha_size.jpg
+        for p in photos:
+            # 800
+            if not os.path.exists(os.path.join(self.cache, "%s_800.jpg" % p.sha)):
+                # Create the image
+                self._convert(p, 800)
+            # 100
+            if not os.path.exists(os.path.join(self.cache, "%s_100.jpg" % p.sha)):
+                # Create the image
+                self._convert(p, 100)
+
+    def _convert(self, photo, width):
+        im = Image.open(os.path.join(self.source, photo.filename))
+        wpercent = (width/float(im.size[0]))
+        hsize = int((float(im.size[1])*float(wpercent)))
+        im.thumbnail((width, hsize))
+        im.save(os.path.join(self.cache, "%s_%d.jpg" % (photo.sha, width)),
+            'JPEG')
+

@@ -132,8 +132,8 @@ class Photo(models.Model):
             self.objects.create(sha=sha, filename=path)
 
 
-from filesystem import Exporter
 def save_json(sender, **kwargs):
+    from filesystem import Exporter
     Exporter()
 
 
