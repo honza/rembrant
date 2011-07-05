@@ -71,7 +71,7 @@ text, people, date taken, camera used, etc.
     /filter/
 
 
-Instalation
+Quick Instalation
 -----------
 
     $ gem install haml sass compass
@@ -79,4 +79,17 @@ Instalation
     $ source env/bin/activate
     (env) $ pip install -r requirements.txt
 
+
+Documentation
+-------------
+
+Documentation can be found in the `docs` directory. It's written in
+reStructuredText using [Sphinx][2]. To build the documentation, run:
+
+    (env) $ pip install sphinx
+    (env) $ cd docs
+    (env) $ make html
+    (env) $ open _build/html/index.html
+
 [s3]: http://aws.amazon.com/s3/
+[2]: http://sphinx.pocoo.org/index.html
