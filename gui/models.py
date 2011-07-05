@@ -1,9 +1,12 @@
+import os
 import json
 import hashlib
+from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 
 
+SOURCE = getattr(settings, 'SOURCE')
 
 
 class Tag(models.Model):
@@ -117,7 +120,7 @@ class Photo(models.Model):
     @classmethod
     def from_path(self, path):
         sha = hashlib.sha1()
-        f = open(path)
+        f = open(os.path.join(SOURCE, path))
         while True:
             try:
                 data = f.read(2**20)

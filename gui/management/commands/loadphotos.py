@@ -1,7 +1,7 @@
 import os
 from django.core.management.base import BaseCommand, CommandError
 from rembrant.gui.models import Photo
-from rembrant.settings import SOURCE
+from django.conf import settings
 
 
 class Command(BaseCommand):
@@ -9,6 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Check if SOURCE exists
+        SOURCE = getattr(settings, 'SOURCE')
         if not os.path.exists(SOURCE):
             raise CommandError("The path specified in SOURCE is not valid.")
 
@@ -19,8 +20,7 @@ class Command(BaseCommand):
             for f in p[2]:
                 if f.startswith('.'):
                     continue
-                i = os.path.join(p[0], f)
-                paths.append(i)
+                paths.append(f)
         for p in paths:
             self.stdout.write("%s\n" % p)
             Photo.from_path(p)
