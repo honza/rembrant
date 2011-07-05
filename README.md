@@ -70,16 +70,11 @@ text, people, date taken, camera used, etc.
 
     /filter/
 
-Dependencies
-------------
-
-* Boto - AWS Python library
-* Django - for templates
-* Python Imaging Library (PIL)
 
 Instalation
 -----------
 
+    $ gem install haml sass compass
     $ virtualenv env --no-site-packages
     $ source env/bin/activate
     (env) $ pip install -r requirements.txt

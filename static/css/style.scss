@@ -1,0 +1,13 @@
+@import "compass";
+@import "blueprint/grid";
+
+/*$blueprint_grid_columns: 8;*/
+/*$blueprint_grid_width: 40px;*/
+
+#photos {
+    @include container;
+}
+
+.photo {
+    @include column(3);
+}
