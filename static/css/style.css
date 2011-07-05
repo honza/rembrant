@@ -1,0 +1,10 @@
+#photos {
+    width: 960px;
+    margin: 20px auto;
+}
+
+.photo {
+    width: 100px;
+    float: left;
+    margin: 5px;
+}

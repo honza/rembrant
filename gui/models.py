@@ -74,6 +74,14 @@ class Photo(models.Model):
     def __unicode__(self):
         return self.filename
 
+    @property
+    def small_thumb(self):
+        return '%s_100.jpg' % self.sha
+
+    @property
+    def big_thumb(self):
+        return '%s_800.jpg' % self.sha
+
     def to_json(self):
         tags = self.tags.all()
         tags = [t.id for t in tags]

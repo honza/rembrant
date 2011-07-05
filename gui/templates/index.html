@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <ul>
+    <div id="photos">
     {% for photo in photos %}
-        <li>
-        <a href="{% url single photo.id %}">{{ photo.filename }}</a> 
-        </li>
+        <div class="photo">
+            <a href="{% url single photo.id %}">
+                <img src="{{ STATIC_URL }}{{ photo.small_thumb }}" />
+            </a> 
+        </div>
     {% endfor %}
-    </ul>
+    </div>
 {% endblock %}
