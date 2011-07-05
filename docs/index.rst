@@ -6,15 +6,51 @@
 Welcome to rembrant's documentation!
 ====================================
 
-Contents:
+Rembrant is a piece of software that helps you organize your photos and create
+online galleries. You run the software locally to create the gallery, add tags
+and collections and then you sync it to your online account on `AWS S3`_.
+
+Advantages
+----------
+
+* Organize your photos in the browser
+* Structure saved in a single JSON file (unlike iPhoto's proprietary format)
+* You own your photographs, not Flickr or Picasa
+* The website is generated on your computer and not on the server, meaning that
+  it's super fast. All the user has to do is download it.
+* Cheap - about $1 for 3GB of images (including bandwidth)
+* Flexible
+* Familiar Django templates
+* Your captions, tags, sets, etc are backed up
+* Customizable user interface
+* Your library can be version controlled (git, hg, etc)
+
+Disadvantages
+-------------
+
+* You have to run a local server (you need to be handy with the terminal)
+* The gallery can only be hosted on a subdomain (e.g.
+  ``http://gallery.example.com``, but not ``http://example.com``)
+
+Under the hood
+--------------
+
+Rembrant is an application that runs in the browser. It's written in Python
+using `Django`_. It uses the `Python Imaging Library`_ to handle image
+processing and manipulation. It uses the `boto`_ library to communicate with
+AWS.
+
+.. _Django: http://djangoproject.com/
+.. _Python Imaging Library: http://www.pythonware.com/products/pil/
+.. _boto: https://github.com/boto/boto
+
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
 
-Indices and tables
-==================
+   installation
+   configuration
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+.. _AWS S3: http://aws.amazon.com/s3/
