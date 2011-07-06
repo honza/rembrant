@@ -52,5 +52,6 @@ Contents
 
    installation
    configuration
+   models
 
 .. _AWS S3: http://aws.amazon.com/s3/
