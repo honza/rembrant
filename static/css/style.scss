@@ -1,8 +1,13 @@
 @import "compass";
+/*@import "blueprint";*/
+@import "blueprint/typography";
 @import "blueprint/grid";
 
-/*$blueprint_grid_columns: 8;*/
-/*$blueprint_grid_width: 40px;*/
+$blueprint_grid_columns: 8;
+$blueprint_grid_width: 40px;
+$blueprint-font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+
+@include blueprint-typography;
 
 #wrap {
     @include container;

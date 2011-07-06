@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h2>{{ photo.title }}</h2>
+<h2>{{ photo.title|default_if_none:"Untitled" }}</h2>
 
 <img src="{{ STATIC_URL }}{{ photo.big_thumb }}" />
 
