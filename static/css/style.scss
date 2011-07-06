@@ -3,8 +3,8 @@
 @import "blueprint/typography";
 @import "blueprint/grid";
 
-$blueprint_grid_columns: 8;
-$blueprint_grid_width: 40px;
+/*$blueprint_grid_columns: 8;*/
+/*$blueprint_grid_width: 40px;*/
 $blueprint-font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
 
 @include blueprint-typography;
@@ -13,10 +13,40 @@ $blueprint-font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
     @include container;
 }
 
+/* Index page */
+
 #photos {
     @include container;
 }
 
 .photo {
     @include column(3);
+}
+
+/* Single page */
+
+#single-photo {
+    h2 {
+        text-align: center;
+    }
+}
+
+#image-box {
+    @include column(20);
+    @include prepend(2);
+    @include append(2);
+}
+
+#caption {
+    @include column(18);
+    @include prepend(3);
+    @include append(3);
+    text-align: center;
+    @include normal-text;
+}
+
+#meta {
+    @include column(16);
+    @include prepend(4);
+    @include append(4);
 }
