@@ -136,6 +136,9 @@ MEDIA_BUNDLES = (
         'css/jquery-ui.css',
         'css/style.scss',
     ),
+    ('main.js',
+        'js/app.js',
+    ),
 )
 
 MEDIA_DEV_MODE = DEBUG

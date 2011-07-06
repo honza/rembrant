@@ -13,6 +13,10 @@ $blueprint-font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
     @include container;
 }
 
+.dialog {
+    display: none;
+}
+
 /* Index page */
 
 #photos {
