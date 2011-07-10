@@ -53,4 +53,19 @@ $blueprint-font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
     @include column(16);
     @include prepend(4);
     @include append(4);
+
+    .meta-section {
+
+        overflow: auto;
+        border-bottom: 1px solid #ececec;
+        
+        .main {
+            @include column(12);
+        }
+
+        .actions {
+            padding-top: 50px;
+            @include column(4, true);
+        }
+    }
 }
