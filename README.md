@@ -3,7 +3,7 @@ Rembrant
 
 Rembrant is a piece of software that helps you organize your photos and create
 online galleries. You run the software locally to create the gallery, add tags
-and collections and then you sync it to your online account on [AWS S3][s3].
+and collections and then you sync it to your online account on [AWS S3][1].
 
 Advantages
 ----------
@@ -15,7 +15,6 @@ Advantages
   it's super fast. All the user has to do is download it.
 * Cheap - about $1 for 3GB of images (including bandwidth)
 * Flexible
-* Familiar Django templates
 * Your captions, tags, sets, etc are backed up
 * Customizable user interface
 * Your library can be version controlled (git, hg, etc)
@@ -71,25 +70,16 @@ text, people, date taken, camera used, etc.
     /filter/
 
 
-Quick Instalation
------------
-
-    $ gem install haml sass compass
-    $ virtualenv env --no-site-packages
-    $ source env/bin/activate
-    (env) $ pip install -r requirements.txt
-
-
 Documentation
 -------------
 
 Documentation can be found in the `docs` directory. It's written in
 reStructuredText using [Sphinx][2]. To build the documentation, run:
 
-    (env) $ pip install sphinx
-    (env) $ cd docs
-    (env) $ make html
-    (env) $ open _build/html/index.html
+    $ pip install sphinx
+    $ cd docs
+    $ make html
+    $ open _build/html/index.html
 
-[s3]: http://aws.amazon.com/s3/
+[1]: http://aws.amazon.com/s3/
 [2]: http://sphinx.pocoo.org/index.html
