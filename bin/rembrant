@@ -2,6 +2,7 @@
 
 var path = require('path');
 var fs   = require('fs');
-var lib  = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
+var root = path.join(path.dirname(fs.realpathSync(__filename)), '../');
+var lib  = path.join(root, 'lib');
 
-console.log(lib);
+require(lib + '/rembrant.js').run()
