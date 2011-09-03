@@ -15,9 +15,9 @@ Advantages
   it's super fast. All the user has to do is download it.
 * Cheap - about $1 for 3GB of images (including bandwidth)
 * Flexible
-* Your captions, tags, sets, etc are backed up
+* Your captions, titles and albums are backed up
 * Customizable user interface
-* Your library can be version controlled (git, hg, etc)
+* Your library can be version controlled (git, hg)
 
 Disadvantages
 -------------
@@ -26,60 +26,49 @@ Disadvantages
 * The gallery can only be hosted on a subdomain (e.g.
   `http://gallery.example.com`, but not `http://example.com`)
 
-URLs
-----
+Usage
+-----
 
-A welcome page with a few of the latest images, list of tags and sets
+This is a typical initial setup:
 
-    /
-
-List of pictures from the given year or year/month
-
-    /2011/
-    /2011/05/
-
-List of pictures with the given tag or in the given set
-
-    /tag/dogs/
-    /set/wedding/
-
-Places
-
-    /places/paris/
-    /places/florida/
-
-People
-
-    /people/john/
-    /people/mom/
-
-Individual images
-
-    /image/20110622_paris_0123.html
-
-Thumbnails
-
-    /thumbs/20110622_paris_0123.jpg
-    /full/20110622_paris_0123.jpg
+1. Create a new directory for your gallery
+2. Initialize a `rembrant` gallery in that directory
+3. Specify where your pictures are in the `library.json` file
+4. Import your photos
+5. Run server to add albums, titles and captions
 
 
+Open the terminal and type:
 
-Filtering page. Allow for any kind of combination: sets, places, tags, caption
-text, people, date taken, camera used, etc.
+    $ mkdir gallery
+    $ cd gallery
+    $ rembrant --init
+    $ vim library.json
+    $ rembrant --import
+    $ rembrant --serve
 
-    /filter/
+Commands
+--------
 
+`--init`
 
-Documentation
--------------
+Create a default `library.json` file. Create cache directory.
 
-Documentation can be found in the `docs` directory. It's written in
-reStructuredText using [Sphinx][2]. To build the documentation, run:
+`--import`
 
-    $ pip install sphinx
-    $ cd docs
-    $ make html
-    $ open _build/html/index.html
+Look at the `source` in the configuration file and load all the images
+contained in it. Populate the library file with the new images. Put all images
+into an `Unsorted` album. Produce 100- and 800- thumbs.
+
+`--scan`
+
+Look in the `source` directory to see if there are any images that aren't
+already in the library. If there are, load them and put them in the `Unsorted`
+album.
+
+License
+-------
+
+BSD. Short and sweet. Check the `LICENSE` file.
 
 [1]: http://aws.amazon.com/s3/
-[2]: http://sphinx.pocoo.org/index.html
