@@ -1,43 +1,28 @@
 fs = require 'fs'
 path = require 'path'
+crypto = require 'crypto'
+_ = require 'underscore'
 
+counter = 0
 
-class Photo
-
-  constructor: (json) ->
-    @title =  json.title or ""
-    @filename =  json.filename
-    @caption =  json.caption or ""
-    @album =  json.album or ""
-    @sha =  json.sha or @getSHA()
-    @smallThumb =  "#{@sha}-100.jpg"
-    @bigThumb =  "#{@sha}-800.jpg"
-
-  toJSON: ->
-    {
-      title: @title
-      filename: @filename
-      caption: @caption
-      album: @album
-      sha: @sha
-      smallThumb: @smallThumb
-      bigThumb: @bigThumb
-    }
-
-  getSHA: ->
-    "abc-SHA"
-
+Photo = require('./photo').Photo
+Library = require('./library').Library
 
 class Manager
 
-  constructor: (cwd) ->
+  constructor: (@cwd) ->
     library = path.join cwd, 'library.json'
-    json = fs.readFileSync library, 'utf-8'
-    @json = JSON.parse json
-
+    @library = JSON.parse fs.readFileSync library, 'utf-8'
+    @library = new Library @library
+    @hasLibrary = path.existsSync library
     @albums = []
-    for a in @json.albums
-      @albums.push @parsePhotos a
+
+    unless @hasLibrary
+      @json = null
+      return
+
+    #for a in @json.albums
+      #@albums.push @parsePhotos a
 
   parsePhotos: (album) ->
     photos = album.photos
@@ -47,11 +32,34 @@ class Manager
       album.photos.push p
     album
 
-  makeTree: ->
-    for album in @albums
-      console.log album.name
-      for photo in album.photos
-        console.log "  #{photo.filename} - #{photo.sha}"
+  importPhotos: ->
+
+    unless @library.source
+      console.log "library.json error; missing 'source'"
+      return
+
+    source = path.join @cwd, @library.source
+    filenames = fs.readdirSync source
+    photos = []
+
+    for file in filenames
+      filename = path.join source, file
+
+      photo = new Photo
+        filename: filename
+
+      #do photo.getSHA
+
+      photo.on 'done', =>
+        counter++
+        if counter is filenames.length
+          console.log 'finished'
+          @library.photos = photos
+          @library.emit 'changed'
+
+      photos.push photo
+
+    console.log 'end of importing'
 
 
 exports.run = ->
@@ -59,4 +67,4 @@ exports.run = ->
   cwd = do process.cwd
 
   manager = new Manager cwd
-  do manager.makeTree
+  do manager.importPhotos
