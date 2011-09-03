@@ -66,6 +66,14 @@ Look in the `source` directory to see if there are any images that aren't
 already in the library. If there are, load them and put them in the `Unsorted`
 album.
 
+`--export`
+
+Produce a static version of your gallery which is suitable for deployment.
+
+`--deploy`
+
+Deploy your gallery to AWS.
+
 License
 -------
 
