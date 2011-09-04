@@ -12,18 +12,27 @@ libraryTemplate = require('./library').libraryTemplate
 class Manager
 
   constructor: (@cwd) ->
+    # Read library file, parse it, create Library instance
     library = path.join cwd, 'library.json'
     @library = JSON.parse fs.readFileSync library, 'utf-8'
     @library = new Library @library
     @hasLibrary = path.existsSync library
+
     @albums = []
 
     unless @hasLibrary
       @json = null
       return
 
-    #for a in @json.albums
-      #@albums.push @parsePhotos a
+  makeCacheDir: =>
+    unless @library.cache
+      console.log 'Error: "cache" setting is required'
+      return
+    cache = path.join @cwd, @library.cache
+    unless path.existsSync cache
+      fs.mkdir cache, '0777', (err) ->
+        if err
+          console.log err
 
   parsePhotos: (album) ->
     photos = album.photos
@@ -32,6 +41,10 @@ class Manager
       p = new Photo photo
       album.photos.push p
     album
+
+  run:  =>
+    do @makeCacheDir
+    do @importPhotos
 
   importPhotos: ->
 
@@ -79,7 +92,7 @@ exports.run = ->
     cwd = do process.cwd
 
     manager = new Manager cwd
-    do manager.importPhotos
+    do manager.run
 
     return
 

@@ -20,6 +20,7 @@ class Library extends EventEmitter
 
   constructor: (@json) ->
     @source = @json.source
+    @cache = @json.cache
     @on 'changed', =>
       string = JSON.stringify @toJSON(), null, 4
       fs.writeFile 'library.json', string, (err) ->
@@ -30,6 +31,7 @@ class Library extends EventEmitter
   toJSON: =>
     {
       source: @source
+      cache: @cache
       photos: p.toJSON() for p in @photos
     }
 
