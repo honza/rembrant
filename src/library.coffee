@@ -18,7 +18,7 @@ formatDate = (d) ->
 
 class Library extends EventEmitter
 
-  constructor: (@json) ->
+  constructor: (@json, @root) ->
     @source = @json.source
     @cache = @json.cache
     @on 'changed', =>
@@ -27,6 +27,9 @@ class Library extends EventEmitter
         if err
           console.log "Error saving library.json."
 
+    @on 'makeThumbs', =>
+      for photo in @photos
+        do photo.makeThumbs
 
   toJSON: =>
     {

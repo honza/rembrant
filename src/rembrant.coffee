@@ -14,8 +14,12 @@ class Manager
   constructor: (@cwd) ->
     # Read library file, parse it, create Library instance
     library = path.join cwd, 'library.json'
+    unless path.existsSync library
+      console.log library
+      throw "Couldn't find library.json"
+      return
     @library = JSON.parse fs.readFileSync library, 'utf-8'
-    @library = new Library @library
+    @library = new Library @library, @cwd
     @hasLibrary = path.existsSync library
 
     @albums = []
@@ -61,20 +65,16 @@ class Manager
 
       photo = new Photo
         filename: filename
-
-      #do photo.getSHA
+        library: @library
 
       photo.on 'done', =>
         counter++
         if counter is filenames.length
-          console.log 'finished'
           @library.photos = photos
           @library.emit 'changed'
+          @library.emit 'makeThumbs'
 
       photos.push photo
-
-    console.log 'end of importing'
-
 
 exports.run = ->
   argv = require('optimist').argv
