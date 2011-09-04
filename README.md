@@ -58,13 +58,13 @@ Commands
 
 `--init`
 
-Create a default `library.json` file. Create cache directory.
+Create a default `library.json` file. 
 
 `--import`
 
 Look at the `source` in the configuration file and load all the images
 contained in it. Populate the library file with the new images. Put all images
-into an `Unsorted` album. Produce 100- and 800- thumbs.
+into an `Unsorted` album. Produce 100- and 800- thumbs. Create cache directory.
 
 `--scan`
 
