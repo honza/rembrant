@@ -10,7 +10,8 @@
     "dependencies": {
         "optimist": ">= 0.2.6",
         "coffee-script": ">= 1.1.2",
-        "underscore": ">= 1.1.7"
+        "underscore": ">= 1.1.7",
+        "imagemagick": ">= 0.1.2"
     },
     "engines": {
         "node": ">= 0.4.11 < 0.7.0"
