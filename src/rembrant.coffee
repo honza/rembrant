@@ -64,7 +64,29 @@ class Manager
 
 exports.run = ->
   argv = require('optimist').argv
-  cwd = do process.cwd
 
-  manager = new Manager cwd
-  do manager.importPhotos
+  if argv.init
+    console.log 'Not implemented yet'
+    return
+
+  if argv.import
+    cwd = do process.cwd
+
+    manager = new Manager cwd
+    do manager.importPhotos
+
+    return
+
+  if argv.scan
+    console.log 'Not implemented yet'
+    return
+
+  if argv.export
+    console.log 'Not implemented yet'
+    return
+
+  if argv.deploy
+    console.log 'Not implemented yet'
+    return
+
+  console.log 'Unknown option'
