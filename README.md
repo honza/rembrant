@@ -26,6 +26,12 @@ Disadvantages
 * The gallery can only be hosted on a subdomain (e.g.
   `http://gallery.example.com`, but not `http://example.com`)
 
+Installation
+------------
+
+1. Install [node.js][2], [npm][3] and [imagemagick][4].
+2. `npm install rembrant`
+
 Usage
 -----
 
@@ -80,3 +86,6 @@ License
 BSD. Short and sweet. Check the `LICENSE` file.
 
 [1]: http://aws.amazon.com/s3/
+[2]: http://nodejs.org/
+[3]: http://npmjs.org/
+[4]: http://imagemagick.org/
