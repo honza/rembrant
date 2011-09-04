@@ -1,9 +1,6 @@
 TODO
 ===============================================================================
 
-* Parse options
-* Produce thumbs (`imagemagick`)
-* Create cache directory
 * Add imported photos to 'Unsorted album'
 * Write server
 * Write frontend (on HTML file, all ajax; Spine)
