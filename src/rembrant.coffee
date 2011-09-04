@@ -7,6 +7,7 @@ counter = 0
 
 Photo = require('./photo').Photo
 Library = require('./library').Library
+libraryTemplate = require('./library').libraryTemplate
 
 class Manager
 
@@ -66,7 +67,12 @@ exports.run = ->
   argv = require('optimist').argv
 
   if argv.init
-    console.log 'Not implemented yet'
+    cwd = do process.cwd
+    lib = do libraryTemplate
+    fs.writeFile 'library.json', lib, (err) ->
+      if err
+        console.log 'Error writing to disk.'
+
     return
 
   if argv.import

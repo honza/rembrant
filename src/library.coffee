@@ -1,6 +1,20 @@
 fs = require 'fs'
 {EventEmitter} = require 'events'
 
+# formatDate
+#
+# take Date object and return a date string formated like this:
+#   YYYY-MM-DD HH:MM:SS
+formatDate = (d) ->
+  pad = (n) ->
+    if n < 10
+      return "0#{n}"
+    n
+
+  date = "#{do d.getFullYear}-#{pad do d.getMonth}-#{pad do d.getDate}"
+  time = "#{pad do d.getHours}:#{pad do d.getMinutes}:#{pad do d.getSeconds}"
+
+  return "#{date} #{time}"
 
 class Library extends EventEmitter
 
@@ -21,3 +35,12 @@ class Library extends EventEmitter
 
 
 exports.Library = Library
+
+# Create a simple library.json template string
+exports.libraryTemplate = ->
+  now = new Date
+  template =
+    source: "source"
+    cache: "cache"
+    lastModified: formatDate now
+  JSON.stringify template, null, 4
