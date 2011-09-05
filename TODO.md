@@ -1,7 +1,6 @@
 TODO
 ===============================================================================
 
-* Add imported photos to 'Unsorted album'
 * Write server
 * Write frontend (on HTML file, all ajax; Spine)
 * Write scanner
