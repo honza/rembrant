@@ -1,3 +1,9 @@
+# rembrant.coffee
+#
+# This file and the Manager class handles loading and serialization of JSON
+# data, creating thumbnails, scanning for new photos, etc. The class is
+# initialized in `app.coffee`.
+
 fs = require 'fs'
 path = require 'path'
 crypto = require 'crypto'
@@ -5,28 +11,28 @@ _ = require 'underscore'
 
 counter = 0
 
-Photo = require('./photo').Photo
-Library = require('./library').Library
-libraryTemplate = require('./library').libraryTemplate
+Photo = require('./models/photo').Photo
+Album = require('./models/album').Album
+Library = require('./models/library').Library
 
 class Manager
 
   constructor: (@cwd) ->
     # Read library file, parse it, create Library instance
-    library = path.join cwd, 'library.json'
+    do @loadLibrary
+
+  loadLibrary: ->
+    library = path.join @cwd, 'library.json'
     unless path.existsSync library
-      console.log library
       throw "Couldn't find library.json"
       return
-    @library = JSON.parse fs.readFileSync library, 'utf-8'
-    @library = new Library @library, @cwd
-    @hasLibrary = path.existsSync library
 
-    @albums = []
+    file = fs.readFileSync library, 'utf-8'
+    if file is ""
+      throw "Empty library.json"
 
-    unless @hasLibrary
-      @json = null
-      return
+    lib = JSON.parse file
+    @library = new Library lib, @cwd
 
   makeCacheDir: =>
     unless @library.cache
@@ -46,6 +52,7 @@ class Manager
       album.photos.push p
     album
 
+  # Temporary wrapper for the import logic
   run:  =>
     do @makeCacheDir
     do @importPhotos
@@ -57,8 +64,17 @@ class Manager
       return
 
     source = path.join @cwd, @library.source
+
+    unless path.existsSync source
+      throw "Source '#{source}' doesn't exist."
+
     filenames = fs.readdirSync source
-    photos = []
+
+    unsorted = new Album
+      name: 'Unsorted'
+      photos: []
+
+    @library.albums = [unsorted]
 
     for file in filenames
       filename = path.join source, file
@@ -70,42 +86,14 @@ class Manager
       photo.on 'done', =>
         counter++
         if counter is filenames.length
-          @library.photos = photos
           @library.emit 'changed'
           @library.emit 'makeThumbs'
 
-      photos.push photo
+      @library.albums[0].photos.push photo
 
-exports.run = ->
-  argv = require('optimist').argv
 
-  if argv.init
-    cwd = do process.cwd
-    lib = do libraryTemplate
-    fs.writeFile 'library.json', lib, (err) ->
-      if err
-        console.log 'Error writing to disk.'
 
-    return
 
-  if argv.import
-    cwd = do process.cwd
 
-    manager = new Manager cwd
-    do manager.run
 
-    return
-
-  if argv.scan
-    console.log 'Not implemented yet'
-    return
-
-  if argv.export
-    console.log 'Not implemented yet'
-    return
-
-  if argv.deploy
-    console.log 'Not implemented yet'
-    return
-
-  console.log 'Unknown option'
+exports.rembrant = Manager

@@ -1,5 +1,6 @@
 fs = require 'fs'
 {EventEmitter} = require 'events'
+Album = require './album'
 
 # formatDate
 #
@@ -21,22 +22,40 @@ class Library extends EventEmitter
   constructor: (@json, @root) ->
     @source = @json.source
     @cache = @json.cache
+    @albums = []
+
     @on 'changed', =>
-      string = JSON.stringify @toJSON(), null, 4
-      fs.writeFile 'library.json', string, (err) ->
+      console.log 'Saving library'
+      fs.writeFile 'library.json', @toJSON(), (err) ->
         if err
           console.log "Error saving library.json."
 
     @on 'makeThumbs', =>
-      for photo in @photos
-        do photo.makeThumbs
+      for album in @albums
+        for photo in album.photos
+          do photo.makeThumbs
+
+  parseAlbums: ->
+    albums = []
+    for album in @json.albums
+      albums.push new Album
+        name: album.name
+        photos: album.photos
+
+    albums
 
   toJSON: =>
-    {
+    now = new Date
+    #albums = do @parseAlbums
+    albums = a.toJSON() for a in @albums
+    console.log albums
+
+    json = 
       source: @source
       cache: @cache
-      photos: p.toJSON() for p in @photos
-    }
+      albums: albums or []
+      lastModified: formatDate now
+    JSON.stringify json, null, 4
 
 
 exports.Library = Library
@@ -47,5 +66,6 @@ exports.libraryTemplate = ->
   template =
     source: "source"
     cache: "cache"
+    albums: []
     lastModified: formatDate now
   JSON.stringify template, null, 4

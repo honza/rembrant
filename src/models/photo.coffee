@@ -9,13 +9,17 @@ class Photo extends EventEmitter
 
   constructor: (json) ->
     @library = json.library
-    @title =  json.title or ""
-    @filename =  json.filename
-    @caption =  json.caption or ""
-    @album =  json.album or ""
-    @sha =  json.sha or @getSHA()
-    @smallThumb =  "#{@sha}-100.jpg"
-    @bigThumb =  "#{@sha}-800.jpg"
+    @title = json.title or ""
+    @filename = json.filename
+    @caption = json.caption or ""
+    @album = json.album or ""
+    @sha = json.sha or @getSHA()
+
+  getSmallThumbUrl: ->
+    "#{@sha}-100.jpg"
+
+  getLargeThumbUrl: ->
+    "#{@sha}-800.jpg"
 
   getSHA: ->
     sum = crypto.createHash 'sha1'
