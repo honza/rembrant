@@ -96,7 +96,6 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'mediagenerator.middleware.MediaMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -126,33 +125,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'mediagenerator',
     'south',
     'gui',
-)
-
-MEDIA_BUNDLES = (
-    ('main.css',
-        'css/jquery-ui.css',
-        'css/style.scss',
-    ),
-    ('main.js',
-        'js/app.js',
-    ),
-)
-
-MEDIA_DEV_MODE = DEBUG
-DEV_MEDIA_URL = '/devmedia/'
-
-SASS_FRAMEWORKS = (
-    'compass',
-    'blueprint'
-)
-
-GLOBAL_MEDIA_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'static'),
-    os.path.join(os.path.dirname(__file__),
-                 'imported-sass-frameworks'),
 )
 
 # A sample logging configuration. The only tangible logging
