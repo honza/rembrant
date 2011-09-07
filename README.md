@@ -27,58 +27,63 @@ Disadvantages
 * The gallery can only be hosted on a subdomain (e.g.
   `http://gallery.example.com`, but not `http://example.com`)
 
-URLs
-----
-
-A welcome page with a few of the latest images, list of tags and sets
-
-    /
-
-List of pictures from the given year or year/month
-
-    /2011/
-    /2011/05/
-
-List of pictures with the given tag or in the given set
-
-    /tag/dogs/
-    /set/wedding/
-
-Places
-
-    /places/paris/
-    /places/florida/
-
-People
-
-    /people/john/
-    /people/mom/
-
-Individual images
-
-    /image/20110622_paris_0123.html
-
-Thumbnails
-
-    /thumbs/20110622_paris_0123.jpg
-    /full/20110622_paris_0123.jpg
-
-
-
-Filtering page. Allow for any kind of combination: sets, places, tags, caption
-text, people, date taken, camera used, etc.
-
-    /filter/
-
 
 Quick Instalation
 -----------
 
-    $ gem install haml sass compass
     $ virtualenv env --no-site-packages
     $ source env/bin/activate
     (env) $ pip install -r requirements.txt
 
+
+Usage
+-----
+
+This is a typical initial setup:
+
+1. Create a new directory for your gallery
+2. Initialize a `rembrant` gallery in that directory
+3. Specify where your pictures are in the `library.json` file
+4. Import your photos
+5. Run server to add albums, titles and captions
+
+
+Open the terminal and type:
+
+    $ mkdir gallery
+    $ cd gallery
+    $ rembrant --init
+    $ vim library.json
+    $ rembrant --import
+    $ rembrant --serve
+
+
+Commands
+--------
+
+`--init`
+
+Create a default `library.json` file. 
+
+`--import`
+
+Look at the `source` in the configuration file and load all the images
+contained in it. Populate the library file with the new images. Put all images
+into an `Unsorted` album. Produce 100- and 800- thumbs. Create cache directory.
+
+`--scan`
+
+Look in the `source` directory to see if there are any images that aren't
+already in the library. If there are, load them and put them in the `Unsorted`
+album.
+
+`--export`
+
+Produce a static version of your gallery which is suitable for deployment.
+
+`--deploy`
+
+Deploy your gallery to AWS.
 
 Documentation
 -------------
@@ -90,6 +95,12 @@ reStructuredText using [Sphinx][2]. To build the documentation, run:
     (env) $ cd docs
     (env) $ make html
     (env) $ open _build/html/index.html
+
+
+License
+-------
+
+BSD. Short and sweet. Check the `LICENSE` file.
 
 [s3]: http://aws.amazon.com/s3/
 [2]: http://sphinx.pocoo.org/index.html
