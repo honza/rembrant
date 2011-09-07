@@ -3,7 +3,7 @@ Rembrant
 
 Rembrant is a piece of software that helps you organize your photos and create
 online galleries. You run the software locally to create the gallery, add tags
-and collections and then you sync it to your online account on [AWS S3][s3].
+and collections and then you sync it to your online account on [AWS S3][1].
 
 Advantages
 ----------
@@ -97,10 +97,19 @@ reStructuredText using [Sphinx][2]. To build the documentation, run:
     (env) $ open _build/html/index.html
 
 
+State
+-----
+
+Please note that this is pretty much pre-alpha software and mostly doesn't
+work. The project is under [Semantic Versioning][3], so it will be stable when
+it reaches `1.0.0`.
+
+
 License
 -------
 
 BSD. Short and sweet. Check the `LICENSE` file.
 
-[s3]: http://aws.amazon.com/s3/
+[1]: http://aws.amazon.com/s3/
 [2]: http://sphinx.pocoo.org/index.html
+[3]: http://semver.org/
