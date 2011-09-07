@@ -21,6 +21,9 @@ class Manager
     # Read library file, parse it, create Library instance
     do @loadLibrary
 
+  load: ->
+    do @loadLibrary
+
   loadLibrary: ->
     library = path.join @cwd, 'library.json'
     unless path.existsSync library

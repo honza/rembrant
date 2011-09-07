@@ -29,7 +29,19 @@ exports.run = ->
     return
 
   if argv.scan
-    console.log 'Not implemented yet'
+    # Temporarily used as a load library testing handler
+    manager = new Rembrant cwd
+    do manager.load
+    console.log manager.library
+
+
+    for p in manager.library.albums[0].photos
+      console.log p
+      # XXX: It's saving photos as nested arrays!
+      break
+      x = JSON.parse p
+      console.log x.filename
+
     return
 
   if argv.export

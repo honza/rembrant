@@ -19,10 +19,10 @@ formatDate = (d) ->
 
 class Library extends EventEmitter
 
-  constructor: (@json, @root) ->
-    @source = @json.source
-    @cache = @json.cache
-    @albums = []
+  constructor: (obj, @root) ->
+    @source = obj.source
+    @cache = obj.cache
+    @albums = [obj.albums] or []
 
     @on 'changed', =>
       console.log 'Saving library'
