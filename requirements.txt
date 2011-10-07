@@ -1,0 +1,3 @@
+-e hg+https://honza@bitbucket.org/mchaput/baker#egg=baker
+bottle
+pil

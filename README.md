@@ -61,27 +61,27 @@ Open the terminal and type:
 Commands
 --------
 
-`--init`
+`init`
 
 Create a default `library.json` file. 
 
-`--import`
+`load`
 
 Look at the `source` in the configuration file and load all the images
 contained in it. Populate the library file with the new images. Put all images
 into an `Unsorted` album. Produce 100- and 800- thumbs. Create cache directory.
 
-`--scan`
+`scan`
 
 Look in the `source` directory to see if there are any images that aren't
 already in the library. If there are, load them and put them in the `Unsorted`
 album.
 
-`--export`
+`export`
 
 Produce a static version of your gallery which is suitable for deployment.
 
-`--deploy`
+`deploy`
 
 Deploy your gallery to AWS.
 
