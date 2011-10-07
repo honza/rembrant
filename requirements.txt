@@ -1,4 +1,0 @@
-Django==1.3
-PIL
-boto
-south
