@@ -5,7 +5,15 @@ from datetime import datetime
 import baker
 from bottle import route, run, debug
 import Image
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, Integer, create_engine, ForeignKey
+from sqlalchemy.orm import sessionmaker, relationship, backref
 
+
+# Globals
+
+engine = create_engine('sqlite:///:memory:')
+Base = declarative_base()
 
 # Constants
 
@@ -73,6 +81,45 @@ def resize(library, filename, sha, width):
     im.thumbnail((width, hsize))
     im.save(os.path.join(cache, "%s_%d.jpg" % (sha, width)), 'JPEG')
 
+
+# ORM
+
+class Album(Base):
+    __tablename__ = 'albums'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return self.name
+
+
+class Photo(Base):
+    __tablename__ = 'photos'
+
+    id = Column(Integer, primary_key=True)
+    filaname = Column(String)
+    sha = Column(String)
+    album_id = Column(Integer, ForeignKey('albums.id'))
+    album = relationship('Album', backref=backref('photos', order_by=id))
+
+    def __init__(self, filename, sha):
+        self.filename = filename
+        self.sha = sha
+
+    def __repr__(self):
+        return '%d - %s' % (self.id, self.filename)
+
+
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
+#session.add(a)
+#session.add(p)
+#session.commit()
 
 # Commands
 
