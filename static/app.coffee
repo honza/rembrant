@@ -24,7 +24,7 @@ class App
   run: ->
     $.getJSON '/photos', null, (response) =>
       console.log response
-      for photo in response
+      for photo in response.photos
         p = new Photo photo
         @el.append do p.render
 

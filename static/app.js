@@ -19,11 +19,12 @@
     }
     App.prototype.run = function() {
       return $.getJSON('/photos', null, __bind(function(response) {
-        var p, photo, _i, _len, _results;
+        var p, photo, _i, _len, _ref, _results;
         console.log(response);
+        _ref = response.photos;
         _results = [];
-        for (_i = 0, _len = response.length; _i < _len; _i++) {
-          photo = response[_i];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          photo = _ref[_i];
           p = new Photo(photo);
           _results.push(this.el.append(p.render()));
         }

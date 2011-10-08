@@ -254,7 +254,7 @@ def deploy():
 
 @baker.command
 def runserver():
-    run(host='localhost', port=8000, server='gunicorn', reloader=True)
+    run(host='localhost', port=8000, server='tornado', reloader=True)
 
 
 # Bottle views
@@ -264,7 +264,7 @@ def all_photos():
     global library
     if not library:
         library = load_lib()
-    return json.dumps(library['photos'])
+    return {'photos': library['photos']}
 
 
 @route('/:filename')
