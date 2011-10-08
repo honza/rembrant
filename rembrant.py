@@ -232,6 +232,8 @@ def load():
         photo = Photo(counter, p, album_id=1)
         photos.append(photo)
 
+        counter += 1
+
     save_lib(library)
 
 
