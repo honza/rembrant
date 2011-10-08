@@ -218,6 +218,10 @@ def init():
 def load():
     library = Library()
 
+    if len(library.photos) > 0:
+        print 'Already loaded. Please use `scan` instead.'
+        return
+
     paths = []
 
     # Collect all image filenames
