@@ -1,4 +1,4 @@
 -e hg+https://honza@bitbucket.org/mchaput/baker#egg=baker
-bottle
+-e git+git://github.com/defnull/bottle.git#egg=bottle
 pil
-sqlalchemy
+gunicorn

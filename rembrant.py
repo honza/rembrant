@@ -252,7 +252,7 @@ def deploy():
 
 @baker.command
 def runserver():
-    run(host='localhost', port=8000, reloader=True)
+    run(host='localhost', port=8000, server='gunicorn', reloader=True)
 
 
 # Bottle views
