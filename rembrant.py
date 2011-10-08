@@ -3,7 +3,7 @@ import json
 import hashlib
 from datetime import datetime
 import baker
-from bottle import route, run, debug
+from bottle import route, run, debug, static_file
 import Image
 
 
@@ -257,9 +257,27 @@ def runserver():
 
 # Bottle views
 
+@route('/photos')
+def all_photos():
+    global library
+    if not library:
+        library = load_lib()
+    return json.dumps(library['photos'])
+
+
+@route('/:filename')
+def server_static(filename):
+    return static_file(filename, root='./static')
+
+
 @route('/')
-def hello():
-    return ''
+def root():
+    return static_file('index.html', root='./static')
+
+
+@route('/photo/:filename')
+def serve_photo(filename):
+    return static_file(filename, root='./cache')
 
 
 if DEBUG:
