@@ -9,6 +9,9 @@ import Image
 
 # Globals
 
+library = None
+
+
 # Constants
 
 DEBUG = True
@@ -29,7 +32,10 @@ def load_lib():
     library_file = open(path)
     library = library_file.read()
     library_file.close()
-    return json.loads(library)
+    library = json.loads(library)
+    library['source'] = os.path.join(os.getcwd(), library['source'])
+    library['cache'] = os.path.join(os.getcwd(), library['cache'])
+    return library
 
 
 def save_lib(library):
@@ -39,7 +45,17 @@ def save_lib(library):
     library['last_modified'] = dt2str(datetime.now())
     path = os.path.join(os.getcwd(), LIBRARY_NAME)
     library_file = open(path, 'w')
-    library = library_file.write(json.dumps(library, indent=4))
+
+    if os.path.isabs(library['source']):
+        library['source'] = os.path.dirname(library['source'])
+    if os.path.isabs(library['cache']):
+        library['cache'] = os.path.dirname(library['cache'])
+
+    global photos
+    library['photos'] = photos.serialize()
+
+    data = json.dumps(library, indent=4)
+    library = library_file.write(data)
     library_file.close()
 
 
@@ -60,21 +76,121 @@ def get_sha(filename):
     return sha.hexdigest()
 
 
-def resize(library, filename, sha, width):
-    """
-    Resize an image with ``filename`` to ``width``. Rename the new image to
-    ``sha_width.jpg``.
-    """
-    source = os.path.join(os.getcwd(), library['source'])
-    cache = os.path.join(os.getcwd(), library['cache'])
-    full_path = os.path.join(source, filename)
+# Models
 
-    im = Image.open(full_path)
-    wpercent = (width/float(im.size[0]))
-    hsize = int((float(im.size[1])*float(wpercent)))
-    im.thumbnail((width, hsize))
-    im.save(os.path.join(cache, "%s_%d.jpg" % (sha, width)), 'JPEG')
+class Collection(list):
+    """
+    Each item in the collection has to inherit from ``Model``.
+    """
 
+    def id(self, id):
+        pass
+
+    def serialize(self):
+        return [i.serialize() for i in self]
+
+
+class Model(object):
+
+    def serialize(self):
+        raise NotImplementedError("You must implement the `serialize` method")
+
+
+class Album(Model):
+
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
+
+
+class Photo(Model):
+
+    def __init__(self, id, filename, sha=None, album_id=None):
+        global library
+
+        self.id = id
+        self.filename = filename
+        self.full_path = os.path.join(library['source'], filename)
+        self.sha = sha
+        self.album_id = album_id
+
+        if not self.sha:
+            self._make_sha()
+
+        if not self.album_id:
+            self.album_id = 1
+
+        if not self.has_thumbs():
+            self._make_thumbnails()
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'filename': self.filename,
+            'sha': self.sha,
+            'album_id': self.album_id
+        }
+
+    def has_thumbs(self):
+        global library
+        small = '%s_%d.jpg' % (self.sha, 100)
+        big = '%s_%d.jpg' % (self.sha, 800)
+
+        full_small = os.path.join(library['cache'], small)
+        full_big = os.path.join(library['cache'], big)
+
+        if not os.path.exists(full_small):
+            return False
+        if not os.path.exists(full_big):
+            return False
+
+        return True
+
+    def _make_sha(self):
+        self.sha = get_sha(self.full_path)
+
+    def _make_thumbnails(self):
+        self.resize(800)
+        self.resize(100)
+
+    def resize(self, width):
+        """
+        Resize an image with ``filename`` to ``width``. Rename the new image to
+        ``sha_width.jpg``.
+        """
+        global library
+        im = Image.open(self.full_path)
+        wpercent = (width/float(im.size[0]))
+        hsize = int((float(im.size[1])*float(wpercent)))
+        im.thumbnail((width, hsize))
+        path = "%s_%d.jpg" % (self.sha, width)
+        im.save(os.path.join(library['cache'], path), 'JPEG')
+
+
+class Database(object):
+
+    def __init__(self, library):
+        self.library = library
+        self.albums = []
+        self.photos = []
+
+    def parse(self):
+        """
+        Parse all the things
+        """
+
+        for p in self.library['photos']:
+            photo = Photo(p['id'], p['filename'], p['sha'], p['album_id'])
+            self.photos.append(photo)
+
+
+photos = Collection()
 
 # Commands
 
@@ -84,9 +200,10 @@ def init():
         'albums': [
             {
                 'name': 'Unsorted',
-                'photos': []
+                'id': 1
             }
         ],
+        'photos': [],
         'source': 'photos',
         'cache': 'cache',
         'last_modified': dt2str(datetime.now())
@@ -96,6 +213,7 @@ def init():
 
 @baker.command
 def load():
+    global library
     library = load_lib()
     paths = []
     full_source = os.path.join(os.getcwd(), library['source'])
@@ -107,22 +225,13 @@ def load():
                 continue
             paths.append(f)
 
-    # Create SHAs
-    photos = []
-    now = dt2str(datetime.now())
+    counter = 1
 
     for p in paths:
-        full_path = os.path.join(full_source, p)
-        sha = get_sha(full_path)
-        photos.append({
-            'filename': p,
-            'added': now,
-            'sha': sha
-        })
-        resize(library, p, sha, 800)
-        resize(library, p, sha, 100)
 
-    library['albums'][0]['photos'] = photos
+        photo = Photo(counter, p, album_id=1)
+        photos.append(photo)
+
     save_lib(library)
 
 
