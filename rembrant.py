@@ -265,7 +265,7 @@ def runserver():
 @route('/photos')
 def all_photos():
     library = Library()
-    return {'photos': library.photos.serialize()}
+    return json.dumps(library.photos.serialize())
 
 
 @route('/:filename')

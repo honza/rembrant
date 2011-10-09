@@ -1,0 +1,18 @@
+body {
+    background: #ececec;
+}
+
+#photos {
+    overflow: auto;
+}
+
+.photo {
+    width: 100px;
+    padding: 5px;
+    margin: 5px;
+    display: inline-block;
+}
+
+.selected-photo {
+    box-shadow: 0 0 5px #000;
+}
