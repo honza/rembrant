@@ -8,13 +8,20 @@
     return child;
   }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   $(function() {
-    var GridView, Photo, PhotoCollection, PhotoView, grid;
+    var Album, AlbumCollection, AlbumLink, Application, GridView, Photo, PhotoCollection, PhotoView, SidebarView, app;
     Photo = (function() {
       __extends(Photo, Backbone.Model);
       function Photo() {
         Photo.__super__.constructor.apply(this, arguments);
       }
       return Photo;
+    })();
+    Album = (function() {
+      __extends(Album, Backbone.Model);
+      function Album() {
+        Album.__super__.constructor.apply(this, arguments);
+      }
+      return Album;
     })();
     PhotoCollection = (function() {
       __extends(PhotoCollection, Backbone.Collection);
@@ -29,6 +36,61 @@
         });
       };
       return PhotoCollection;
+    })();
+    AlbumCollection = (function() {
+      __extends(AlbumCollection, Backbone.Collection);
+      function AlbumCollection() {
+        AlbumCollection.__super__.constructor.apply(this, arguments);
+      }
+      AlbumCollection.prototype.model = Album;
+      AlbumCollection.prototype.url = '/albums';
+      return AlbumCollection;
+    })();
+    AlbumLink = (function() {
+      __extends(AlbumLink, Backbone.View);
+      function AlbumLink() {
+        this.handleClick = __bind(this.handleClick, this);
+        AlbumLink.__super__.constructor.apply(this, arguments);
+      }
+      AlbumLink.prototype.tagName = 'li';
+      AlbumLink.prototype.events = {
+        'click a': 'handleClick'
+      };
+      AlbumLink.prototype.handleClick = function() {
+        app.grid.loadPhotos(this.model);
+        return false;
+      };
+      AlbumLink.prototype.render = function() {
+        var html;
+        html = "<a href=\"\">" + (this.model.get('name')) + "</a>";
+        $(this.el).html(html);
+        return this;
+      };
+      return AlbumLink;
+    })();
+    SidebarView = (function() {
+      __extends(SidebarView, Backbone.View);
+      SidebarView.prototype.el = $('#sidebar');
+      function SidebarView() {
+        this.addAll = __bind(this.addAll, this);
+        this.addOne = __bind(this.addOne, this);        this.albums = new AlbumCollection;
+        this.albums.bind('add', this.addOne);
+        this.albums.bind('reset', this.addAll);
+        this.albums.bind('all', this.render);
+        this.albums.fetch();
+      }
+      SidebarView.prototype.addOne = function(album) {
+        var view;
+        view = new AlbumLink({
+          model: album
+        });
+        return this.el.append(view.render().el);
+      };
+      SidebarView.prototype.addAll = function() {
+        return this.albums.each(this.addOne);
+      };
+      SidebarView.prototype.render = function() {};
+      return SidebarView;
     })();
     PhotoView = (function() {
       __extends(PhotoView, Backbone.View);
@@ -68,13 +130,23 @@
         this.render = __bind(this.render, this);
         this.getCount = __bind(this.getCount, this);
         this.addAll = __bind(this.addAll, this);
-        this.addOne = __bind(this.addOne, this);        this.photos = new PhotoCollection;
+        this.addOne = __bind(this.addOne, this);        this.delegateEvents();
+        this.loadPhotos();
+      }
+      GridView.prototype.loadPhotos = function(album) {
+        this.clear();
+        this.photos = new PhotoCollection;
+        if (album) {
+          this.photos.url = "/albums/" + (album.get('id')) + "/photos";
+        }
         this.photos.bind('add', this.addOne);
         this.photos.bind('reset', this.addAll);
         this.photos.bind('all', this.render);
-        this.photos.fetch();
-        this.delegateEvents();
-      }
+        return this.photos.fetch();
+      };
+      GridView.prototype.clear = function() {
+        return $('.photo').remove();
+      };
       GridView.prototype.addOne = function(photo) {
         var view;
         view = new PhotoView({
@@ -98,6 +170,14 @@
       };
       return GridView;
     })();
-    return grid = new GridView;
+    Application = (function() {
+      __extends(Application, Backbone.View);
+      function Application() {
+        this.grid = new GridView;
+        this.sidebar = new SidebarView;
+      }
+      return Application;
+    })();
+    return app = new Application;
   });
 }).call(this);

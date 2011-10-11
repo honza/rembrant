@@ -5,6 +5,7 @@ $ ->
   # Models
 
   class Photo extends Backbone.Model
+  class Album extends Backbone.Model
 
 
   # Collections
@@ -18,7 +19,48 @@ $ ->
       @filter (photo) ->
         photo.get 'selected'
 
+
+  class AlbumCollection extends Backbone.Collection
+    model: Album
+    url: '/albums'
+
   # Views
+
+  class AlbumLink extends Backbone.View
+
+    tagName: 'li'
+    events:
+      'click a': 'handleClick'
+
+    handleClick: =>
+      app.grid.loadPhotos @model
+      false
+
+    render: ->
+      html = """<a href="">#{@model.get 'name'}</a>"""
+      $(@el).html html
+      @
+
+  class SidebarView extends Backbone.View
+
+    el: $ '#sidebar'
+
+    constructor: ->
+      @albums = new AlbumCollection
+      @albums.bind 'add', @addOne
+      @albums.bind 'reset', @addAll
+      @albums.bind 'all', @render
+
+      do @albums.fetch
+
+    addOne: (album) =>
+      view = new AlbumLink model: album
+      @el.append view.render().el
+
+    addAll: => @albums.each @addOne
+
+    render: ->
+
 
   class PhotoView extends Backbone.View
 
@@ -51,13 +93,21 @@ $ ->
       'click #get-count': 'getCount'
 
     constructor: ->
+      do @delegateEvents
+      do @loadPhotos
+
+    loadPhotos: (album) ->
+      do @clear
       @photos = new PhotoCollection
+      if album
+        @photos.url = "/albums/#{album.get 'id'}/photos"
       @photos.bind 'add', @addOne
       @photos.bind 'reset', @addAll
       @photos.bind 'all', @render
 
       do @photos.fetch
-      do @delegateEvents
+
+    clear: -> $('.photo').remove()
 
     addOne: (photo) =>
       view = new PhotoView model: photo
@@ -77,7 +127,13 @@ $ ->
       @$('#selected-count').text count
       @
 
+  class Application extends Backbone.View
+
+    constructor: ->
+      @grid = new GridView
+      @sidebar = new SidebarView
+
   ############################################################################
 
   # Start the engines
-  grid = new GridView
+  app = new Application
