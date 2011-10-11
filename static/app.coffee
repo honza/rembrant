@@ -45,7 +45,7 @@ $ ->
 
     el: $ '#sidebar'
 
-    constructor: ->
+    initialize: ->
       @albums = new AlbumCollection
       @albums.bind 'add', @addOne
       @albums.bind 'reset', @addAll
@@ -92,7 +92,7 @@ $ ->
     events:
       'click #get-count': 'getCount'
 
-    constructor: ->
+    initialize: ->
       do @delegateEvents
       do @loadPhotos
 
@@ -129,7 +129,7 @@ $ ->
 
   class Application extends Backbone.View
 
-    constructor: ->
+    initialize: ->
       @grid = new GridView
       @sidebar = new SidebarView
 

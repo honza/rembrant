@@ -70,15 +70,19 @@
     })();
     SidebarView = (function() {
       __extends(SidebarView, Backbone.View);
-      SidebarView.prototype.el = $('#sidebar');
       function SidebarView() {
         this.addAll = __bind(this.addAll, this);
-        this.addOne = __bind(this.addOne, this);        this.albums = new AlbumCollection;
+        this.addOne = __bind(this.addOne, this);
+        SidebarView.__super__.constructor.apply(this, arguments);
+      }
+      SidebarView.prototype.el = $('#sidebar');
+      SidebarView.prototype.initialize = function() {
+        this.albums = new AlbumCollection;
         this.albums.bind('add', this.addOne);
         this.albums.bind('reset', this.addAll);
         this.albums.bind('all', this.render);
-        this.albums.fetch();
-      }
+        return this.albums.fetch();
+      };
       SidebarView.prototype.addOne = function(album) {
         var view;
         view = new AlbumLink({
@@ -122,17 +126,21 @@
     })();
     GridView = (function() {
       __extends(GridView, Backbone.View);
-      GridView.prototype.el = $('#photos');
-      GridView.prototype.events = {
-        'click #get-count': 'getCount'
-      };
       function GridView() {
         this.render = __bind(this.render, this);
         this.getCount = __bind(this.getCount, this);
         this.addAll = __bind(this.addAll, this);
-        this.addOne = __bind(this.addOne, this);        this.delegateEvents();
-        this.loadPhotos();
+        this.addOne = __bind(this.addOne, this);
+        GridView.__super__.constructor.apply(this, arguments);
       }
+      GridView.prototype.el = $('#photos');
+      GridView.prototype.events = {
+        'click #get-count': 'getCount'
+      };
+      GridView.prototype.initialize = function() {
+        this.delegateEvents();
+        return this.loadPhotos();
+      };
       GridView.prototype.loadPhotos = function(album) {
         this.clear();
         this.photos = new PhotoCollection;
@@ -173,9 +181,12 @@
     Application = (function() {
       __extends(Application, Backbone.View);
       function Application() {
-        this.grid = new GridView;
-        this.sidebar = new SidebarView;
+        Application.__super__.constructor.apply(this, arguments);
       }
+      Application.prototype.initialize = function() {
+        this.grid = new GridView;
+        return this.sidebar = new SidebarView;
+      };
       return Application;
     })();
     return app = new Application;
