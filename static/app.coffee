@@ -104,7 +104,7 @@ $ ->
       <img src="/photo/#{@model.get 'sha'}_800.jpg" />
       """
       $(@el).html html
-      left = (app.width - 900) / 2
+      left = (app.width - 840) / 2
       $(@el).css
         left: left
         right: left

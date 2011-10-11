@@ -37,7 +37,10 @@ body {
     position: absolute;
     top: 10px;
     margin: 0 auto;
-    width: 900px;
+    width: 800px;
     z-index: 100;
     display: none;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 5px #000;
 }

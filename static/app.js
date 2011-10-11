@@ -149,7 +149,7 @@
         var html, left;
         html = "<img src=\"/photo/" + (this.model.get('sha')) + "_800.jpg\" />";
         $(this.el).html(html);
-        left = (app.width - 900) / 2;
+        left = (app.width - 840) / 2;
         $(this.el).css({
           left: left,
           right: left
