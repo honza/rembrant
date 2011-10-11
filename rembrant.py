@@ -43,7 +43,24 @@ class Collection(list):
     """
 
     def id(self, id):
-        pass
+        for i in self:
+            if i.id == id:
+                return i
+        return None
+
+    def filter(self, **kwds):
+        """
+        Only one key at a time for now
+        """
+        keys = kwds.keys()
+        key = keys[0]
+        results = Collection()
+        for i in self:
+            attr = getattr(i, key, None)
+            if attr == int(kwds[key]):
+                results.append(i)
+        return results
+
 
     def serialize(self):
         return [i.serialize() for i in self]
@@ -128,6 +145,12 @@ class Library(object):
         """
         photo = Photo(self.source, self.cache, id, filename, sha, album_id)
         self.photos.append(photo)
+
+    def get_album(self, id):
+        return self.albums.id(id)
+
+    def get_photos_for_album(self, id):
+        return self.photos.filter(album_id=id)
 
 
 class Album(Model):
@@ -266,6 +289,19 @@ def runserver():
 def all_photos():
     library = Library()
     return json.dumps(library.photos.serialize())
+
+
+@route('/albums')
+def albums():
+    library = Library()
+    return json.dumps(library.albums.serialize())
+
+
+@route('/albums/:id/photos')
+def photos_of_album(id):
+    library = Library()
+    photos = library.get_photos_for_album(id)
+    return json.dumps(photos.serialize())
 
 
 @route('/:filename')
