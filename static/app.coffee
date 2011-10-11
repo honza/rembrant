@@ -66,6 +66,7 @@ $ ->
 
     events:
       'click img': 'toggleSelect'
+      'dblclick img': 'showLarge'
 
     toggleSelect: ->
       if @model.get 'selected'
@@ -74,6 +75,10 @@ $ ->
       else
         $(@el).addClass 'selected-photo'
         @model.set selected: true
+
+    showLarge: =>
+      view = new Viewer model: @model
+      view.render()
 
 
     render: ->
@@ -84,6 +89,28 @@ $ ->
       $(@el).html html
       @
 
+  class Viewer extends Backbone.View
+
+    el: $ '#viewer'
+
+    events:
+      'click img': 'close'
+
+    close: ->
+      do $(@el).hide
+
+    render: ->
+      html = """
+      <img src="/photo/#{@model.get 'sha'}_800.jpg" />
+      """
+      $(@el).html html
+      left = (app.width - 900) / 2
+      $(@el).css
+        left: left
+        right: left
+      do $(@el).show
+      @
+  
 
   class GridView extends Backbone.View
 
@@ -132,6 +159,7 @@ $ ->
     initialize: ->
       @grid = new GridView
       @sidebar = new SidebarView
+      @width = $('body').width()
 
   ############################################################################
 

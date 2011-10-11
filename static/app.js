@@ -8,7 +8,7 @@
     return child;
   }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   $(function() {
-    var Album, AlbumCollection, AlbumLink, Application, GridView, Photo, PhotoCollection, PhotoView, SidebarView, app;
+    var Album, AlbumCollection, AlbumLink, Application, GridView, Photo, PhotoCollection, PhotoView, SidebarView, Viewer, app;
     Photo = (function() {
       __extends(Photo, Backbone.Model);
       function Photo() {
@@ -99,10 +99,12 @@
     PhotoView = (function() {
       __extends(PhotoView, Backbone.View);
       function PhotoView() {
+        this.showLarge = __bind(this.showLarge, this);
         PhotoView.__super__.constructor.apply(this, arguments);
       }
       PhotoView.prototype.events = {
-        'click img': 'toggleSelect'
+        'click img': 'toggleSelect',
+        'dblclick img': 'showLarge'
       };
       PhotoView.prototype.toggleSelect = function() {
         if (this.model.get('selected')) {
@@ -115,6 +117,13 @@
           });
         }
       };
+      PhotoView.prototype.showLarge = function() {
+        var view;
+        view = new Viewer({
+          model: this.model
+        });
+        return view.render();
+      };
       PhotoView.prototype.render = function() {
         var html;
         html = "<img src=\"/photo/" + (this.model.get('sha')) + "_100.jpg\" />";
@@ -123,6 +132,32 @@
         return this;
       };
       return PhotoView;
+    })();
+    Viewer = (function() {
+      __extends(Viewer, Backbone.View);
+      function Viewer() {
+        Viewer.__super__.constructor.apply(this, arguments);
+      }
+      Viewer.prototype.el = $('#viewer');
+      Viewer.prototype.events = {
+        'click img': 'close'
+      };
+      Viewer.prototype.close = function() {
+        return $(this.el).hide();
+      };
+      Viewer.prototype.render = function() {
+        var html, left;
+        html = "<img src=\"/photo/" + (this.model.get('sha')) + "_800.jpg\" />";
+        $(this.el).html(html);
+        left = (app.width - 900) / 2;
+        $(this.el).css({
+          left: left,
+          right: left
+        });
+        $(this.el).show();
+        return this;
+      };
+      return Viewer;
     })();
     GridView = (function() {
       __extends(GridView, Backbone.View);
@@ -185,7 +220,8 @@
       }
       Application.prototype.initialize = function() {
         this.grid = new GridView;
-        return this.sidebar = new SidebarView;
+        this.sidebar = new SidebarView;
+        return this.width = $('body').width();
       };
       return Application;
     })();
