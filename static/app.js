@@ -21,6 +21,7 @@
       function Album() {
         Album.__super__.constructor.apply(this, arguments);
       }
+      Album.prototype.urlRoot = '/albums';
       return Album;
     })();
     PhotoCollection = (function() {
@@ -76,11 +77,17 @@
         SidebarView.__super__.constructor.apply(this, arguments);
       }
       SidebarView.prototype.el = $('#sidebar');
+      SidebarView.prototype.events = {
+        'click .new-album': 'addAlbum',
+        'click #new-album-submit': 'newAlbumSubmit'
+      };
       SidebarView.prototype.initialize = function() {
+        this.newAlbum = $('#new-album');
         this.albums = new AlbumCollection;
         this.albums.bind('add', this.addOne);
         this.albums.bind('reset', this.addAll);
         this.albums.bind('all', this.render);
+        this.render();
         return this.albums.fetch();
       };
       SidebarView.prototype.addOne = function(album) {
@@ -93,7 +100,34 @@
       SidebarView.prototype.addAll = function() {
         return this.albums.each(this.addOne);
       };
-      SidebarView.prototype.render = function() {};
+      SidebarView.prototype.newAlbumSubmit = function() {
+        var albumName, model;
+        albumName = $('#new-album-name').val();
+        model = new Album({
+          name: albumName
+        });
+        console.log(model.url());
+        model.save();
+        this.albums.add(model);
+        $('#new-album-name').val('');
+        return this.newAlbum.hide();
+      };
+      SidebarView.prototype.addAlbum = function() {
+        var left;
+        left = (app.width - 500) / 2;
+        this.newAlbum.css({
+          left: left,
+          right: left
+        });
+        this.newAlbum.show();
+        return false;
+      };
+      SidebarView.prototype.render = function() {
+        var html;
+        html = "<li><a class=\"new-album\" href=\"\">Add new album</a></li>";
+        $(this.el).append(html);
+        return this;
+      };
       return SidebarView;
     })();
     PhotoView = (function() {

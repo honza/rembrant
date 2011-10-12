@@ -10,12 +10,21 @@
     </head>
     <body>
         <div id="wrap">
-            <div id="sidebar"><h2>Albums</h2></div>
+            <div id="sidebar">
+                <h2>Albums</h2>
+                <div id="new-album">
+                    <p>
+                        <label for="new-album-name">Album name:</label>
+                        <input type="text" id="new-album-name" />
+                    </p>
+                    <p>
+                        <input type="submit" id="new-album-submit" value="Save" />
+                    </p>
+                </div>
+            </div>
             <div id="photos">
                 Selected: <span id="selected-count">0</span>
-
                 <div id="grid"></div>
-
             </div>
         </div>
         <div id="viewer"></div>

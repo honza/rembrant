@@ -6,6 +6,7 @@ $ ->
 
   class Photo extends Backbone.Model
   class Album extends Backbone.Model
+    urlRoot: '/albums'
 
 
   # Collections
@@ -44,13 +45,20 @@ $ ->
   class SidebarView extends Backbone.View
 
     el: $ '#sidebar'
+    events:
+      'click .new-album':          'addAlbum'
+      'click #new-album-submit':   'newAlbumSubmit'
 
     initialize: ->
+      @newAlbum = $ '#new-album'
+
+
       @albums = new AlbumCollection
       @albums.bind 'add', @addOne
       @albums.bind 'reset', @addAll
       @albums.bind 'all', @render
 
+      do @render
       do @albums.fetch
 
     addOne: (album) =>
@@ -59,7 +67,30 @@ $ ->
 
     addAll: => @albums.each @addOne
 
+    newAlbumSubmit: ->
+      albumName = do $('#new-album-name').val
+      model = new Album
+        name: albumName
+      console.log do model.url
+      do model.save
+      @albums.add model
+      $('#new-album-name').val ''
+      do @newAlbum.hide
+
+    addAlbum: ->
+      left = (app.width - 500) / 2
+      @newAlbum.css
+        left: left
+        right: left
+      do @newAlbum.show
+      false
+
     render: ->
+      html = """
+      <li><a class="new-album" href="">Add new album</a></li>
+      """
+      $(@el).append html
+      @
 
 
   class PhotoView extends Backbone.View

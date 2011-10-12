@@ -3,7 +3,7 @@ import json
 import hashlib
 from datetime import datetime
 import baker
-from bottle import route, run, debug, static_file
+from bottle import route, run, debug, static_file, post, get, request
 import Image
 
 
@@ -61,6 +61,15 @@ class Collection(list):
                 results.append(i)
         return results
 
+    def _highest_id(self):
+        """
+        Return the highest id in the collection
+        """
+        a = 0
+        for i in self:
+            if i.id > a:
+                a = i.id
+        return a
 
     def serialize(self):
         return [i.serialize() for i in self]
@@ -148,6 +157,12 @@ class Library(object):
 
     def get_album(self, id):
         return self.albums.id(id)
+
+    def create_album(self, name):
+        id = self.albums._highest_id() + 1
+        album = Album(id, name)
+        self.albums.append(album)
+        return id
 
     def get_photos_for_album(self, id):
         return self.photos.filter(album_id=id)
@@ -291,10 +306,23 @@ def all_photos():
     return json.dumps(library.photos.serialize())
 
 
-@route('/albums')
+@get('/albums')
 def albums():
     library = Library()
     return json.dumps(library.albums.serialize())
+
+
+@post('/albums')
+def new_album():
+    library = Library()
+    payload = json.loads(request.body.read())
+    name = payload['name']
+    id = library.create_album(name)
+    library.save()
+    return {
+        'id': id,
+        'name': name
+    }
 
 
 @route('/albums/:id/photos')

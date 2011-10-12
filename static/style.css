@@ -44,3 +44,14 @@ body {
     padding: 20px;
     box-shadow: 0 0 5px #000;
 }
+
+#new-album {
+    position: absolute;
+    top: 30px;
+    width: 500px;
+    z-index: 100;
+    display: none;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 5px #000;
+}
