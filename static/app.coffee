@@ -5,6 +5,9 @@ $ ->
   # Models
 
   class Photo extends Backbone.Model
+    defaults:
+      selected: false
+
   class Album extends Backbone.Model
     urlRoot: '/albums'
 
@@ -96,27 +99,34 @@ $ ->
 
   class PhotoView extends Backbone.View
 
+    tagName: 'div'
+    className: 'photo'
+
     events:
       'click img': 'toggleSelect'
       'dblclick img': 'showLarge'
 
-    toggleSelect: ->
+    initialize: ->
+      @model.bind 'change', @render
+
+    toggleSelect: =>
       if @model.get 'selected'
-        $(@el).removeClass 'selected-photo'
-        @model.unset 'selected'
+        @model.set selected: false
       else
-        $(@el).addClass 'selected-photo'
         @model.set selected: true
 
     showLarge: =>
       view = new Viewer model: @model
       view.render()
 
-    render: ->
+    render: =>
       html = """
       <img src="/photo/#{@model.get 'sha'}_100.jpg" />
       """
-      $(@el).addClass 'photo'
+      if @model.get 'selected'
+        $(@el).addClass 'selected-photo'
+      else
+        $(@el).removeClass 'selected-photo'
       $(@el).html html
       @
 

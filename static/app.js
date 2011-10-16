@@ -19,6 +19,9 @@
       function Photo() {
         Photo.__super__.constructor.apply(this, arguments);
       }
+      Photo.prototype.defaults = {
+        selected: false
+      };
       return Photo;
     })();
     Album = (function() {
@@ -142,19 +145,26 @@
     PhotoView = (function() {
       __extends(PhotoView, Backbone.View);
       function PhotoView() {
+        this.render = __bind(this.render, this);
         this.showLarge = __bind(this.showLarge, this);
+        this.toggleSelect = __bind(this.toggleSelect, this);
         PhotoView.__super__.constructor.apply(this, arguments);
       }
+      PhotoView.prototype.tagName = 'div';
+      PhotoView.prototype.className = 'photo';
       PhotoView.prototype.events = {
         'click img': 'toggleSelect',
         'dblclick img': 'showLarge'
       };
+      PhotoView.prototype.initialize = function() {
+        return this.model.bind('change', this.render);
+      };
       PhotoView.prototype.toggleSelect = function() {
         if (this.model.get('selected')) {
-          $(this.el).removeClass('selected-photo');
-          return this.model.unset('selected');
+          return this.model.set({
+            selected: false
+          });
         } else {
-          $(this.el).addClass('selected-photo');
           return this.model.set({
             selected: true
           });
@@ -170,7 +180,11 @@
       PhotoView.prototype.render = function() {
         var html;
         html = "<img src=\"/photo/" + (this.model.get('sha')) + "_100.jpg\" />";
-        $(this.el).addClass('photo');
+        if (this.model.get('selected')) {
+          $(this.el).addClass('selected-photo');
+        } else {
+          $(this.el).removeClass('selected-photo');
+        }
         $(this.el).html(html);
         return this;
       };
