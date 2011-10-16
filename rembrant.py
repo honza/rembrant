@@ -3,7 +3,7 @@ import json
 import hashlib
 from datetime import datetime
 import baker
-from bottle import route, run, debug, static_file, post, get, request
+from bottle import route, run, debug, static_file, post, get, request, put
 import Image
 
 
@@ -44,9 +44,14 @@ class Collection(list):
 
     def id(self, id):
         for i in self:
-            if i.id == id:
+            if int(i.id) == int(id):
                 return i
         return None
+
+    def update(self, id, instance):
+        i = self.id(id)
+        ind = self.index(i)
+        self[ind] = instance
 
     def filter(self, **kwds):
         """
@@ -57,8 +62,14 @@ class Collection(list):
         results = Collection()
         for i in self:
             attr = getattr(i, key, None)
-            if attr == int(kwds[key]):
-                results.append(i)
+            if not attr:
+                continue
+            if isinstance(attr, list):
+                if int(kwds[key]) in attr:
+                    results.append(i)
+            else:
+                if attr == int(kwds[key]):
+                    results.append(i)
         return results
 
     def _highest_id(self):
@@ -115,7 +126,7 @@ class Library(object):
         photos = library['photos']
         for photo in photos:
             self.add_photo(photo['id'], photo['filename'], photo['sha'],
-                    photo['album_id'])
+                    photo['albums'])
 
         # Parse albums
         albums = library['albums']
@@ -148,11 +159,11 @@ class Library(object):
         library_file.write(data)
         library_file.close()
 
-    def add_photo(self, id, filename, sha=None, album_id=None):
+    def add_photo(self, id, filename, sha=None, albums=[]):
         """
         Create a new ``Photo`` instance and add it the ``photos`` collection.
         """
-        photo = Photo(self.source, self.cache, id, filename, sha, album_id)
+        photo = Photo(self.source, self.cache, id, filename, sha, albums)
         self.photos.append(photo)
 
     def get_album(self, id):
@@ -165,7 +176,7 @@ class Library(object):
         return id
 
     def get_photos_for_album(self, id):
-        return self.photos.filter(album_id=id)
+        return self.photos.filter(albums=id)
 
 
 class Album(Model):
@@ -183,21 +194,29 @@ class Album(Model):
 
 class Photo(Model):
 
-    def __init__(self, source_dir, cache_dir, id, filename, sha=None, album_id=None):
+    fields = [
+        'id',
+        'filename',
+        'sha',
+        'albums'
+    ]
+
+    def __init__(self, source_dir, cache_dir, id, filename, sha=None,
+            albums=[]):
 
         self.id = id
         self.filename = filename
         self.full_path = os.path.join(source_dir, filename)
         self.sha = sha
-        self.album_id = album_id
+        self.albums = albums
         self.source_dir = source_dir
         self.cache_dir = cache_dir
 
         if not self.sha:
             self._make_sha()
 
-        if not self.album_id:
-            self.album_id = 1
+        if not self.albums:
+            self.albums = [1]
 
         if not self.has_thumbs():
             self._make_thumbnails()
@@ -207,7 +226,7 @@ class Photo(Model):
             'id': self.id,
             'filename': self.filename,
             'sha': self.sha,
-            'album_id': self.album_id
+            'albums': self.albums
         }
 
     def has_thumbs(self):
@@ -272,7 +291,7 @@ def load():
     counter = 1
 
     for p in paths:
-        library.add_photo(counter, p, album_id=1)
+        library.add_photo(counter, p, albums=[1])
         counter += 1
 
     library.save()
@@ -304,6 +323,31 @@ def runserver():
 def all_photos():
     library = Library()
     return json.dumps(library.photos.serialize())
+
+
+@put('/photos/:id')
+def update_photo(id):
+    payload = json.loads(request.body.read())
+    library = Library()
+    photo = library.photos.id(id)
+    for key in payload.keys():
+        if key in Photo.fields:
+            if key == 'id':
+                continue
+            try:
+                # if the value is int
+                setattr(photo, key, int(payload[key]))
+            except ValueError:
+                # normal values
+                setattr(photo, key, payload[key])
+            except TypeError:
+                # list
+                i = [int(x) for x in payload[key]]
+                setattr(photo, key, i)
+
+    library.photos.update(id, photo)
+    library.save()
+    return photo.serialize()
 
 
 @get('/albums')
