@@ -6,7 +6,12 @@
     child.prototype = new ctor;
     child.__super__ = parent.prototype;
     return child;
-  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __indexOf = Array.prototype.indexOf || function(item) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i] === item) return i;
+    }
+    return -1;
+  };
   $(function() {
     var Album, AlbumCollection, AlbumLink, Application, GridView, Photo, PhotoCollection, PhotoView, RembrantRouter, SidebarView, Viewer, app;
     Photo = (function() {
@@ -286,16 +291,21 @@
           }
           return _results;
         })();
+        console.log(this.selection);
         _ref = this.selection;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           photo = _ref[_i];
           original = photo.get('albums');
           for (_j = 0, _len2 = selected.length; _j < _len2; _j++) {
             s = selected[_j];
-            original.push(s);
+            s = parseInt(s, 10);
+            if (__indexOf.call(original, s) < 0) {
+              original.push(s);
+            }
           }
           photo.save({
-            albums: original
+            albums: original,
+            silent: true
           });
         }
         $('#album-selection').hide();

@@ -211,11 +211,16 @@ $ ->
     confirmAddToAlbum: =>
       selected = $('#album-selection li input:checked')
       selected = (s.value for s in selected)
+      console.log @selection
       for photo in @selection
         original = photo.get 'albums'
         for s in selected
-          original.push s
-        photo.save albums: original
+          s = parseInt s, 10
+          if s not in original
+            original.push s
+        photo.save
+          albums: original
+          silent: true
 
       do $('#album-selection').hide
       false
