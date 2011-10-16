@@ -5,6 +5,7 @@ from datetime import datetime
 import baker
 from bottle import route, run, debug, static_file, post, get, request, put
 import Image
+from jinja2 import Environment, FileSystemLoader
 
 
 # Constants
@@ -97,6 +98,7 @@ class Library(object):
     def __init__(self):
         self.source = None
         self.cache = None
+        self.templates = None
         self.albums = Collection()
         self.photos = Collection()
 
@@ -111,6 +113,7 @@ class Library(object):
         if not os.path.exists(path):
             self.source = 'photos'
             self.cache = 'cache'
+            self.templates = 'templates'
             self.albums.append(Album(1, 'Unsorted'))
             return
 
@@ -121,6 +124,7 @@ class Library(object):
 
         self.source = os.path.join(os.getcwd(), library['source'])
         self.cache = os.path.join(os.getcwd(), library['cache'])
+        self.templates = os.path.join(os.getcwd(), library['templates'])
 
         # Parse photos
         photos = library['photos']
@@ -149,6 +153,10 @@ class Library(object):
             library['cache'] = os.path.basename(self.cache)
         else:
             library['cache'] = self.cache
+        if self.templates != 'templates':
+            library['templates'] = os.path.basename(self.templates)
+        else:
+            library['templates'] = self.templates
 
         library['photos'] = self.photos.serialize()
         library['albums'] = self.albums.serialize()
@@ -263,6 +271,98 @@ class Photo(Model):
         im.save(os.path.join(self.cache_dir, path), 'JPEG')
 
 
+class Renderer(object):
+
+    def __init__(self, library):
+        self.library = library
+        self.path = self.library.templates
+        self.env = Environment(loader=FileSystemLoader(self.path))
+
+        self.build = os.path.join(os.getcwd(), 'build')
+        if not os.path.exists(self.build):
+            os.mkdir(self.build)
+
+    def _render_singles(self):
+        for photo in self.library.photos:
+            self._render_single(photo)
+
+    def _render_single(self, photo):
+        html = self._render('single.html', {
+            'photo': photo
+        })
+        path = os.path.join(self.build, '%d.html' % photo.id)
+        self._write_file(path, html)
+
+    def _render(self, template, values):
+        t = self.env.get_template(template)
+        return t.render(values)
+
+    def _write_file(self, path, content):
+        f = open(path, 'w')
+        f.write(content)
+        f.close()
+
+    def _render_home(self):
+        photos = self.library.photos
+        num = len(photos)
+        if num > 10:
+            photos = photos[:10]
+            extra = True
+        else:
+            extra = False
+
+        html = self._render('index.html', {
+            'photos': photos,
+            'extra': extra
+        })
+
+        path = os.path.join(self.build, 'index.html')
+        self._write_file(path, html)
+
+    def _render_paged_feed(self):
+        per = 10  # TODO: config?
+        num = len(self.library.photos)
+        pages = num / per
+
+        page_dir = os.path.join(self.build, 'page')
+
+        if not os.path.exists(page_dir):
+            os.mkdir(page_dir)
+
+        for x in range(1, pages + 1):
+            if x == 1:
+                prev = '/'
+            else:
+                prev = '/page/%d/' % x
+
+            if x < pages:
+                next = '/page/%d/' % int(x + 1)
+            else:
+                next = None
+
+            n = per * x
+            p = self.library.photos[n:n + per]
+
+            v = {
+                'page': x + 1,
+                'photos': p,
+                'prev': prev,
+                'total': pages + 1,
+                'next': next
+            }
+
+            html = self._render('paged.html', v)
+            path = os.path.join(page_dir, '%d.html' % (int(x) + 1))
+            self._write_file(path, html)
+
+    def run(self):
+        """
+        Perform the actual rendering
+        """
+        self._render_singles()
+        self._render_paged_feed()
+        self._render_home()
+
 # Commands
 
 @baker.command
@@ -304,7 +404,9 @@ def scan():
 
 @baker.command
 def export():
-    pass
+    library = Library()
+    renderer = Renderer(library)
+    renderer.run()
 
 
 @baker.command

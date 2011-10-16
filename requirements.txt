@@ -1,3 +1,4 @@
 -e hg+https://honza@bitbucket.org/mchaput/baker#egg=baker
 pil
 tornado
+jinja2
