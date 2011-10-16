@@ -55,3 +55,28 @@ body {
     padding: 20px;
     box-shadow: 0 0 5px #000;
 }
+
+#new-album-name {
+    padding: 5px;
+    border: 1px solid #ccc;
+}
+
+#album-selection {
+    position: absolute;
+    top: 30px;
+    width: 500px;
+    z-index: 100;
+    display: none;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px #000;
+}
+
+#album-selection ul {
+    padding: 0;
+    margin: 0;
+}
+
+#album-selection li {
+    list-style: none;
+}

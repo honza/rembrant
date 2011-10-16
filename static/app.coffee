@@ -20,7 +20,6 @@ $ ->
       @filter (photo) ->
         photo.get 'selected'
 
-
   class AlbumCollection extends Backbone.Collection
     model: Album
     url: '/albums'
@@ -34,7 +33,7 @@ $ ->
       'click a': 'handleClick'
 
     handleClick: =>
-      app.grid.loadPhotos @model
+      app.app.grid.loadPhotos @model
       false
 
     render: ->
@@ -48,10 +47,10 @@ $ ->
     events:
       'click .new-album':          'addAlbum'
       'click #new-album-submit':   'newAlbumSubmit'
+      'click .close':              'closeDialog'
 
     initialize: ->
       @newAlbum = $ '#new-album'
-
 
       @albums = new AlbumCollection
       @albums.bind 'add', @addOne
@@ -71,18 +70,21 @@ $ ->
       albumName = do $('#new-album-name').val
       model = new Album
         name: albumName
-      console.log do model.url
       do model.save
       @albums.add model
       $('#new-album-name').val ''
       do @newAlbum.hide
 
     addAlbum: ->
-      left = (app.width - 500) / 2
+      left = (app.app.width - 500) / 2
       @newAlbum.css
         left: left
         right: left
       do @newAlbum.show
+      false
+
+    closeDialog: ->
+      do @newAlbum.hide
       false
 
     render: ->
@@ -91,7 +93,6 @@ $ ->
       """
       $(@el).append html
       @
-
 
   class PhotoView extends Backbone.View
 
@@ -110,7 +111,6 @@ $ ->
     showLarge: =>
       view = new Viewer model: @model
       view.render()
-
 
     render: ->
       html = """
@@ -135,20 +135,22 @@ $ ->
       <img src="/photo/#{@model.get 'sha'}_800.jpg" />
       """
       $(@el).html html
-      left = (app.width - 840) / 2
+      left = (app.app.width - 840) / 2
       $(@el).css
         left: left
         right: left
       do $(@el).show
       @
   
-
   class GridView extends Backbone.View
 
     el: $ '#photos'
 
     events:
-      'click #get-count': 'getCount'
+      'click #get-count':              'getCount'
+      'click #add-selection-to-album': 'addToSelection'
+      'click #confirm-add-to-album':   'confirmAddToAlbum'
+      'click .close':                  'closeDialog'
 
     initialize: ->
       do @delegateEvents
@@ -180,6 +182,44 @@ $ ->
       count = @photos.selected().length
       console.log count
 
+    addToSelection: =>
+      @selection = do @photos.selected
+      if @selection.length is 0
+        return false
+      @renderAlbumSelection app.app.sidebar.albums
+      false
+
+    renderAlbumSelection: (albums) ->
+      html = ""
+      for album in albums.models
+        model = do album.toJSON # Just to show off a paradigm
+        a = """
+        <li>
+            <input type="checkbox" value="#{model.id}" />
+            #{model.name}
+        </li>
+        """
+        html += a
+      $('#album-selection ul').html html
+      do $('#album-selection').show
+
+    closeDialog: ->
+      do $('#album-selection').hide
+      $('#album-selection li input:checked').attr('checked', '')
+      false
+
+    confirmAddToAlbum: =>
+      selected = $('#album-selection li input:checked')
+      selected = (s.value for s in selected)
+      for photo in @selection
+        original = photo.get 'albums'
+        for s in selected
+          original.push s
+        photo.save albums: original
+
+      do $('#album-selection').hide
+      false
+
     render: =>
       count = @photos.selected().length
       @$('#selected-count').text count
@@ -192,7 +232,25 @@ $ ->
       @sidebar = new SidebarView
       @width = $('body').width()
 
+  class RembrantRouter extends Backbone.Router
+
+    routes:
+      '': 'home'
+
+    initialize: ->
+      @app = new Application
+
+    home: ->
+
   ############################################################################
 
   # Start the engines
-  app = new Application
+  app = new RembrantRouter 
+  Backbone.history.start()
+
+
+
+
+
+
+

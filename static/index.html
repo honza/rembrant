@@ -20,10 +20,17 @@
                     <p>
                         <input type="submit" id="new-album-submit" value="Save" />
                     </p>
+                    <a href="#" class="close">Close</a>
                 </div>
             </div>
             <div id="photos">
-                Selected: <span id="selected-count">0</span>
+                Selected: <span id="selected-count">0</span> - 
+                <a id="add-selection-to-album" href="">Add selection to album</a>
+                <div id="album-selection">
+                    <ul></ul>
+                    <input type="submit" value="Add" id="confirm-add-to-album" />
+                    <a href="#" class="close">Close</a>
+                </div>
                 <div id="grid"></div>
             </div>
         </div>

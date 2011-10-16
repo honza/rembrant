@@ -8,7 +8,7 @@
     return child;
   }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   $(function() {
-    var Album, AlbumCollection, AlbumLink, Application, GridView, Photo, PhotoCollection, PhotoView, SidebarView, Viewer, app;
+    var Album, AlbumCollection, AlbumLink, Application, GridView, Photo, PhotoCollection, PhotoView, RembrantRouter, SidebarView, Viewer, app;
     Photo = (function() {
       __extends(Photo, Backbone.Model);
       function Photo() {
@@ -58,7 +58,7 @@
         'click a': 'handleClick'
       };
       AlbumLink.prototype.handleClick = function() {
-        app.grid.loadPhotos(this.model);
+        app.app.grid.loadPhotos(this.model);
         return false;
       };
       AlbumLink.prototype.render = function() {
@@ -79,7 +79,8 @@
       SidebarView.prototype.el = $('#sidebar');
       SidebarView.prototype.events = {
         'click .new-album': 'addAlbum',
-        'click #new-album-submit': 'newAlbumSubmit'
+        'click #new-album-submit': 'newAlbumSubmit',
+        'click .close': 'closeDialog'
       };
       SidebarView.prototype.initialize = function() {
         this.newAlbum = $('#new-album');
@@ -106,7 +107,6 @@
         model = new Album({
           name: albumName
         });
-        console.log(model.url());
         model.save();
         this.albums.add(model);
         $('#new-album-name').val('');
@@ -114,12 +114,16 @@
       };
       SidebarView.prototype.addAlbum = function() {
         var left;
-        left = (app.width - 500) / 2;
+        left = (app.app.width - 500) / 2;
         this.newAlbum.css({
           left: left,
           right: left
         });
         this.newAlbum.show();
+        return false;
+      };
+      SidebarView.prototype.closeDialog = function() {
+        this.newAlbum.hide();
         return false;
       };
       SidebarView.prototype.render = function() {
@@ -183,7 +187,7 @@
         var html, left;
         html = "<img src=\"/photo/" + (this.model.get('sha')) + "_800.jpg\" />";
         $(this.el).html(html);
-        left = (app.width - 840) / 2;
+        left = (app.app.width - 840) / 2;
         $(this.el).css({
           left: left,
           right: left
@@ -197,6 +201,8 @@
       __extends(GridView, Backbone.View);
       function GridView() {
         this.render = __bind(this.render, this);
+        this.confirmAddToAlbum = __bind(this.confirmAddToAlbum, this);
+        this.addToSelection = __bind(this.addToSelection, this);
         this.getCount = __bind(this.getCount, this);
         this.addAll = __bind(this.addAll, this);
         this.addOne = __bind(this.addOne, this);
@@ -204,7 +210,10 @@
       }
       GridView.prototype.el = $('#photos');
       GridView.prototype.events = {
-        'click #get-count': 'getCount'
+        'click #get-count': 'getCount',
+        'click #add-selection-to-album': 'addToSelection',
+        'click #confirm-add-to-album': 'confirmAddToAlbum',
+        'click .close': 'closeDialog'
       };
       GridView.prototype.initialize = function() {
         this.delegateEvents();
@@ -239,6 +248,59 @@
         count = this.photos.selected().length;
         return console.log(count);
       };
+      GridView.prototype.addToSelection = function() {
+        this.selection = this.photos.selected();
+        if (this.selection.length === 0) {
+          return false;
+        }
+        this.renderAlbumSelection(app.app.sidebar.albums);
+        return false;
+      };
+      GridView.prototype.renderAlbumSelection = function(albums) {
+        var a, album, html, model, _i, _len, _ref;
+        html = "";
+        _ref = albums.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          album = _ref[_i];
+          model = album.toJSON();
+          a = "<li>\n    <input type=\"checkbox\" value=\"" + model.id + "\" />\n    " + model.name + "\n</li>";
+          html += a;
+        }
+        $('#album-selection ul').html(html);
+        return $('#album-selection').show();
+      };
+      GridView.prototype.closeDialog = function() {
+        $('#album-selection').hide();
+        $('#album-selection li input:checked').attr('checked', '');
+        return false;
+      };
+      GridView.prototype.confirmAddToAlbum = function() {
+        var original, photo, s, selected, _i, _j, _len, _len2, _ref;
+        selected = $('#album-selection li input:checked');
+        selected = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = selected.length; _i < _len; _i++) {
+            s = selected[_i];
+            _results.push(s.value);
+          }
+          return _results;
+        })();
+        _ref = this.selection;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          photo = _ref[_i];
+          original = photo.get('albums');
+          for (_j = 0, _len2 = selected.length; _j < _len2; _j++) {
+            s = selected[_j];
+            original.push(s);
+          }
+          photo.save({
+            albums: original
+          });
+        }
+        $('#album-selection').hide();
+        return false;
+      };
       GridView.prototype.render = function() {
         var count;
         count = this.photos.selected().length;
@@ -259,6 +321,21 @@
       };
       return Application;
     })();
-    return app = new Application;
+    RembrantRouter = (function() {
+      __extends(RembrantRouter, Backbone.Router);
+      function RembrantRouter() {
+        RembrantRouter.__super__.constructor.apply(this, arguments);
+      }
+      RembrantRouter.prototype.routes = {
+        '': 'home'
+      };
+      RembrantRouter.prototype.initialize = function() {
+        return this.app = new Application;
+      };
+      RembrantRouter.prototype.home = function() {};
+      return RembrantRouter;
+    })();
+    app = new RembrantRouter;
+    return Backbone.history.start();
   });
 }).call(this);
