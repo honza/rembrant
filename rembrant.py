@@ -326,7 +326,9 @@ class Renderer(object):
 
     def _render_paged_feed(self):
         per = 10  # TODO: config?
-        num = len(self.library.photos)
+        photos = self.library.photos
+        photos.reverse()
+        num = len(photos)
         pages = num / per
 
         page_dir = os.path.join(self.build, 'page')
@@ -336,17 +338,17 @@ class Renderer(object):
 
         for x in range(1, pages + 1):
             if x == 1:
-                prev = '/'
+                prev = 'index.html'
             else:
-                prev = '/page/%d/' % x
+                prev = 'page/%d.html' % x
 
             if x < pages:
-                next = '/page/%d/' % int(x + 1)
+                next = 'page/%d.html' % int(x + 2)
             else:
                 next = None
 
             n = per * x
-            p = self.library.photos[n:n + per]
+            p = photos[n:n + per]
 
             v = {
                 'page': x + 1,

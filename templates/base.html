@@ -1,13 +1,17 @@
 <!doctype html>
 <html>
 <head>
+    {% block css %}
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen" charset="utf-8">
+    {% endblock %}
 </head>
 <body>
-    <h1>Photo gallery</h1>
+    <div id="wrap">
+        <h1>Photo gallery</h1>
 
-    {% block content %}
+        {% block content %}
 
-    {% endblock %}
-
+        {% endblock %}
+    </div>
 </body>
 </html>

@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block css %}
+<link rel="stylesheet" href="../style.css" type="text/css" media="screen" charset="utf-8">
+{% endblock %}
+
 {% block content %}
 
 {% for photo in photos %}
@@ -7,5 +11,12 @@
         <img src="../images/{{ photo.sha }}_800.jpg" />
     </a>
 {% endfor %}
+
+<div id="nav">
+<a href="../{{ prev }}">Prev</a><br>
+{% if next %}
+    <a href="../{{ next }}">Next</a>
+{% endif %}
+</div>
 
 {% endblock %}
