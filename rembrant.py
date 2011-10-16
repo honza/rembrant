@@ -283,13 +283,18 @@ class Renderer(object):
             os.mkdir(self.build)
 
     def _render_singles(self):
+        counter = 1
+        total = len(self.library.photos)
         for photo in self.library.photos:
-            self._render_single(photo)
+            count = '[%d/%d]' % (counter, total)
+            self._render_single(photo, count)
+            counter += 1
 
-    def _render_single(self, photo):
+    def _render_single(self, photo, count):
         html = self._render('single.html', {
             'photo': photo
         })
+        print '%s - Rendering photo %s...' % (count, photo.filename)
         path = os.path.join(self.build, '%d.html' % photo.id)
         self._write_file(path, html)
 
