@@ -31,9 +31,12 @@ Disadvantages
 Quick Instalation
 -----------
 
+    $ git clone git://github.com/honza/rembrant.git
+    $ cd rembrant
     $ virtualenv env --no-site-packages
     $ source env/bin/activate
     (env) $ pip install -r requirements.txt
+    $ python remrant init
 
 
 Usage
@@ -52,11 +55,14 @@ Open the terminal and type:
 
     $ mkdir gallery
     $ cd gallery
-    $ rembrant --init
+    $ python rembrant.py init
     $ vim library.json
-    $ rembrant --import
-    $ rembrant --serve
+    $ ... update settings
+    $ python rembrant.py import
+    $ python rembrant.py serve
 
+Before you can deploy your gallery, you need to fill out the `aws_key`,
+`aws_secret` and `aws_bucket` fields in your `library.json` file.
 
 Commands
 --------
@@ -85,6 +91,11 @@ Produce a static version of your gallery which is suitable for deployment.
 
 Deploy your gallery to AWS.
 
+`runserver`
+
+Run a local development server on port `8000` to make changes to your gallery's
+properties (add photos to albums, change captions, etc).
+
 Documentation
 -------------
 
@@ -109,6 +120,15 @@ License
 -------
 
 BSD. Short and sweet. Check the `LICENSE` file.
+
+Changelog
+---------
+
+* `0.2.0`
+    * All commands except for scan work
+    * You can actually deploy stuff
+    * May require some path adjustments to get to work
+    * Still unsure about installation
 
 [1]: http://aws.amazon.com/s3/
 [2]: http://sphinx.pocoo.org/index.html
