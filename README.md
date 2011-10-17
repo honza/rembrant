@@ -107,6 +107,8 @@ reStructuredText using [Sphinx][2]. To build the documentation, run:
     (env) $ make html
     (env) $ open _build/html/index.html
 
+You can find the latest documentation [here][4].
+
 
 State
 -----
@@ -133,3 +135,4 @@ Changelog
 [1]: http://aws.amazon.com/s3/
 [2]: http://sphinx.pocoo.org/index.html
 [3]: http://semver.org/
+[4]: http://rembrant.readthedocs.org/en/latest/index.html
