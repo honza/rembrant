@@ -99,6 +99,9 @@ class Library(object):
         self.source = None
         self.cache = None
         self.templates = None
+        self.aws_key = None
+        self.aws_secret = None
+        self.aws_bucket = None
         self.albums = Collection()
         self.photos = Collection()
 
@@ -125,6 +128,10 @@ class Library(object):
         self.source = os.path.join(os.getcwd(), library['source'])
         self.cache = os.path.join(os.getcwd(), library['cache'])
         self.templates = os.path.join(os.getcwd(), library['templates'])
+
+        self.aws_key = library['aws_key']
+        self.aws_secret = library['aws_secret']
+        self.aws_bucket = library['aws_bucket']
 
         # Parse photos
         photos = library['photos']
@@ -160,6 +167,10 @@ class Library(object):
 
         library['photos'] = self.photos.serialize()
         library['albums'] = self.albums.serialize()
+
+        library['aws_key'] = self.aws_key
+        library['aws_secret'] = self.aws_secret
+        library['aws_bucket'] = self.aws_bucket
 
         data = json.dumps(library, indent=4)
 
@@ -418,7 +429,35 @@ def export():
 
 @baker.command
 def deploy():
-    pass
+    """
+    Upload all files in the ``build`` directory to AWS.
+    """
+    from boto.s3.connection import S3Connection
+    from boto.s3.key import Key
+    library = Library()
+    conn = S3Connection(library.aws_key, library.aws_secret)
+    bucket = conn.get_bucket(library.aws_bucket)
+
+    build = os.path.join(os.getcwd(), 'build')
+    all_files = []
+
+    for o in os.walk(build, followlinks=True):
+        p = o[0].replace(build, '')
+        for filename in o[2]:
+            if filename == '.DS_Store':  # Lame
+                continue
+            path = '%s/%s' % (p, filename)
+            all_files.append(path[1:])
+
+    total = len(all_files)
+    counter = 1
+    for f in all_files:
+        print "[%d/%d] %s" % (counter, total, f)
+        counter += 1
+        key = Key(bucket)
+        key.key = f
+        path = os.path.join(build, f)
+        key.set_contents_from_filename(path)
 
 
 @baker.command
