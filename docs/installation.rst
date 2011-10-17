@@ -3,48 +3,61 @@ Installation
 
 It's recommended that you install rembrant with `virtualenv`_.
 
+First, clone the project from Github:
+
+.. code-block:: bash
+
+    $ git clone git://github.com/honza/rembrant.git
+    $ cd rembrant
+
+Create your environment and install the requirements:
+
 .. code-block:: bash
 
     $ virtualenv env --no-site-packages
     $ source env/bin/activate
-    (env)$
+    (env) $ pip install -r requirements.txt
 
-Rembrant comes with a list of requirements that are contained in the
-``requirements.txt`` file. You can install all the packages by running:
-
-.. code-block:: bash
-
-    (env)$ pip install -r requirements.txt
-
-Next, there are a couple of Ruby dependencies. Run the following to install
-them.
+Initialize your library:
 
 .. code-block:: bash
 
-    (env)$ gem install haml sass compass
+    $ python rembrant.py init
 
-.. note::
-
-    If you want to avoid polluting your global scope with rembrant's Ruby gems,
-    you can install them into your environment. Read `Install Ruby gems into
-    virtualenv`_.
-
-Next, you will sync the database and run migrations.
+This will create a ``library.json`` file in the ``rembrant/`` directory. Next,
+you will want to symlink your photo directory to ``rembrant/photos``. Then,
+load your photos into the library:
 
 .. code-block:: bash
 
-    (env)$ python manage.py syncdb
-    (env)$ python manage.py migrate
+    $ python rembrant.py load
 
-And finally, you can run the server.
+This will add your photos to the ``library.json`` file. It will assign an *id*
+to each photo and a *sha* digest to make sure it's unique. It will also create
+2 thumbnails for each photo. One that's 100px wide and one that's 800px wide.
+By default, it will place the thumbnails to the ``cache`` variable set in your
+library file.
+
+Next, we will export your gallery to HTML.
 
 .. code-block:: bash
 
-    (env)$ python manage.py runserver
+    $ python rembrant.py export
 
-You can now view rembrant in your browser by going to
-``http://localhost:8000``.
+This will create a static site representation of your gallery. It will create a
+detail page for each photo, and a blog-like feed of photos. The HTML generated
+by this command will be placed in the ``build/`` directory.
+
+Next, we will deploy this code to AWS S3.
+
+.. code-block:: bash
+
+    $ python rembrant.py deploy
+
+This will copy all of the files in ``build/`` to your S3 bucket.
+
+.. note:: Before you can deploy code to AWS S3, please make sure that the
+    ``aws_key``, ``aws_secret`` and ``aws_bucket`` settings are populated.
 
 
 .. _virtualenv: http://www.virtualenv.org/en/latest/
-.. _Install Ruby gems into virtualenv: http://honza.ca/2011/06/install-ruby-gems-into-virtualenv/

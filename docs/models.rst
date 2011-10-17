@@ -25,22 +25,6 @@ Photo model
 
     The photo's caption.
 
-.. py:attribute:: tags
-
-    A list of :py:class:`Tag` instances.
-
-.. py:attribute:: sets
-
-    A list of :py:class:`Set` instances.
-
-.. py:attribute:: people
-
-    A list of :py:class:`Person` instances.
-
-.. py:attribute:: places
-
-    A list of :py:class:`Place` instances.
-
 .. py:attribute:: sha
 
     A hexdigest of a SHA hash of the original image file.
@@ -58,41 +42,3 @@ Photo model
     Return a Python dictionary representing the :py:class:`Photo` instance
     suitable for serialization into JSON. Related objects are represented as
     lists of primary keys.
-
-
-Tag model
----------
-
-.. py:class:: Tag
-
-    The tag class
-
-.. py:attribute:: name
-
-Set model
----------
-
-.. py:class:: Set
-
-    The set class
-
-.. py:attribute:: name
-
-Person model
-------------
-
-.. py:class:: Person
-
-    The person class
-
-.. py:attribute:: name
-
-Place model
------------
-
-.. py:class:: Place
-
-    The place class
-
-.. py:attribute:: name
-

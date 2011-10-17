@@ -1,33 +1,33 @@
 Configuration
 =============
 
-To configure your installation, edit the ``config.py`` file.
+.. object:: source
 
-.. py:data:: SOURCE
+    This is the name of the directory where rembrant expects to find image
+    files.
 
-    This is an absolute path to a directory where you original photos are
-    stored. These are never modified.
+.. object:: cache
 
-.. py:data:: LIBRARY
+    This is the name of the directory where rembrant will place thumbnails.
 
-    This is an absolute path to your main library file. This file contains
-    information about your photographs, tags, sets, etc. It should be kept
-    under version control.
+.. object:: templates
 
-.. py:data:: CACHE_DIR
+    The name of the directory where your templates are stored.
 
-    This is an absolute path to a directory where rembrant will save cached
-    image files such as thumbnails.
+.. object:: aws_key
 
-.. py:data:: BUILD
+    Your AWS access key. This is used for deployment to S3.
 
-    This is an absolute path to a directory where rembrant will place your
-    generated online photo gallery.
+.. object:: aws_secret
 
-.. py:data:: AWS_KEY
-    
-    Amazon Web Services key to your account.
+    Your AWS access secret. This is used for deployment to S3.
 
-.. py:data:: AWS_SECRET
+.. object:: aws_bucket
 
-    Amazon Web Services secret to your account.
+    The name of the AWS S3 bucket where you would like your gallery to be
+    deployed.
+
+.. object:: last_modified
+
+    This value is automatically update each time any changes are made to your
+    library.

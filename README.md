@@ -36,7 +36,7 @@ Quick Instalation
     $ virtualenv env --no-site-packages
     $ source env/bin/activate
     (env) $ pip install -r requirements.txt
-    $ python remrant init
+    (env) $ python rembrant.py init
 
 
 Usage

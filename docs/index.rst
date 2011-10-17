@@ -32,17 +32,7 @@ Disadvantages
 * The gallery can only be hosted on a subdomain (e.g.
   ``http://gallery.example.com``, but not ``http://example.com``)
 
-Under the hood
---------------
 
-Rembrant is an application that runs in the browser. It's written in Python
-using `Django`_. It uses the `Python Imaging Library`_ to handle image
-processing and manipulation. It uses the `boto`_ library to communicate with
-AWS.
-
-.. _Django: http://djangoproject.com/
-.. _Python Imaging Library: http://www.pythonware.com/products/pil/
-.. _boto: https://github.com/boto/boto
 
 Contents
 --------
