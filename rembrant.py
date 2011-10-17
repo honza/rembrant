@@ -449,15 +449,48 @@ def deploy():
             path = '%s/%s' % (p, filename)
             all_files.append(path[1:])
 
-    total = len(all_files)
+    # Check changed
+    cache_file_path = 'cache.json'
+
+    if os.path.exists(cache_file_path):
+        # Only check the cache if the the file exists
+
+        files_to_deploy = []
+
+        cache_file = open(cache_file_path)
+        cache = json.loads(cache_file.read())
+        cache_file.close()
+
+        for f in all_files:
+            if f not in cache.keys():
+                # If it's not cached, it has to be built
+                files_to_deploy.append(f)
+                continue
+            path = os.path.join(build, f)
+            sha = get_sha(path)
+            if sha != cache[f]:
+                files_to_deploy.append(f)
+    else:
+        files_to_deploy = all_files
+        cache = {}
+
+    total = len(files_to_deploy)
     counter = 1
-    for f in all_files:
+    # Deploy changed files
+    for f in files_to_deploy:
         print "[%d/%d] %s" % (counter, total, f)
         counter += 1
+        path = os.path.join(build, f)
+        sha = get_sha(path)
+        # Update the cache with the new sha
+        cache[f] = sha
         key = Key(bucket)
         key.key = f
-        path = os.path.join(build, f)
         key.set_contents_from_filename(path)
+
+    cache_file = open(cache_file_path, 'w')
+    cache_file.write(json.dumps(cache))
+    cache_file.close()
 
 
 @baker.command
