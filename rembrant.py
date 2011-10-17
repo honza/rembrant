@@ -446,11 +446,13 @@ def deploy():
         for filename in o[2]:
             if filename == '.DS_Store':  # Lame
                 continue
+            if filename == '.cache.json':
+                continue
             path = '%s/%s' % (p, filename)
             all_files.append(path[1:])
 
     # Check changed
-    cache_file_path = 'cache.json'
+    cache_file_path = os.path.join(build, '.cache.json')
 
     if os.path.exists(cache_file_path):
         # Only check the cache if the the file exists
