@@ -505,7 +505,9 @@ def runserver():
 @route('/photos')
 def all_photos():
     library = Library()
-    return json.dumps(library.photos.serialize())
+    photos = library.photos
+    photos.reverse()
+    return json.dumps(photos.serialize())
 
 
 @put('/photos/:id')
