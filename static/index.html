@@ -12,6 +12,14 @@
         <div id="wrap">
             <div id="sidebar">
                 <h2>Albums</h2>
+                <a id="new-album-link" href="">New album</a>
+                <div id="album-selection">
+                    <ul></ul>
+                    <input type="submit" value="Add" id="confirm-add-to-album" />
+                    <a href="#" class="close">Close</a>
+                </div>
+                Selected: <span id="selected-count">0</span><br>
+                <a id="add-selection-to-album" href="">Add selection to album</a>
                 <div id="new-album">
                     <p>
                         <label for="new-album-name">Album name:</label>
@@ -24,13 +32,7 @@
                 </div>
             </div>
             <div id="photos">
-                Selected: <span id="selected-count">0</span> - 
-                <a id="add-selection-to-album" href="">Add selection to album</a>
-                <div id="album-selection">
-                    <ul></ul>
-                    <input type="submit" value="Add" id="confirm-add-to-album" />
-                    <a href="#" class="close">Close</a>
-                </div>
+                <div id="loading"><h3>Loading...</h3></div>
                 <div id="grid"></div>
             </div>
         </div>

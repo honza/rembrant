@@ -6,14 +6,14 @@
     child.prototype = new ctor;
     child.__super__ = parent.prototype;
     return child;
-  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __indexOf = Array.prototype.indexOf || function(item) {
+  }, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
     }
     return -1;
   };
   $(function() {
-    var Album, AlbumCollection, AlbumLink, Application, GridView, Photo, PhotoCollection, PhotoView, RembrantRouter, SidebarView, Viewer, app;
+    var Album, AlbumCollection, AlbumSelectionView, CounterView, GridView, Photo, PhotoCollection, PhotoView, RembrantRouter, SidebarAlbumView, SidebarView, ViewerView, app;
     Photo = (function() {
       __extends(Photo, Backbone.Model);
       function Photo() {
@@ -29,7 +29,6 @@
       function Album() {
         Album.__super__.constructor.apply(this, arguments);
       }
-      Album.prototype.urlRoot = '/albums';
       return Album;
     })();
     PhotoCollection = (function() {
@@ -44,6 +43,12 @@
           return photo.get('selected');
         });
       };
+      PhotoCollection.prototype.byAlbum = function(album) {
+        return this.filter(function(photo) {
+          var _ref;
+          return _ref = album.id, __indexOf.call(photo.get('albums'), _ref) >= 0;
+        });
+      };
       return PhotoCollection;
     })();
     AlbumCollection = (function() {
@@ -55,112 +60,174 @@
       AlbumCollection.prototype.url = '/albums';
       return AlbumCollection;
     })();
-    AlbumLink = (function() {
-      __extends(AlbumLink, Backbone.View);
-      function AlbumLink() {
-        this.handleClick = __bind(this.handleClick, this);
-        AlbumLink.__super__.constructor.apply(this, arguments);
+    SidebarAlbumView = (function() {
+      __extends(SidebarAlbumView, Backbone.View);
+      function SidebarAlbumView() {
+        SidebarAlbumView.__super__.constructor.apply(this, arguments);
       }
-      AlbumLink.prototype.tagName = 'li';
-      AlbumLink.prototype.events = {
-        'click a': 'handleClick'
+      SidebarAlbumView.prototype.tagname = 'div';
+      SidebarAlbumView.prototype.className = 'album';
+      SidebarAlbumView.prototype.events = {
+        'click a': 'click'
       };
-      AlbumLink.prototype.handleClick = function() {
-        app.app.grid.loadPhotos(this.model);
-        return false;
+      SidebarAlbumView.prototype.initialize = function() {
+        return this.render();
       };
-      AlbumLink.prototype.render = function() {
+      SidebarAlbumView.prototype.render = function() {
         var html;
         html = "<a href=\"\">" + (this.model.get('name')) + "</a>";
-        $(this.el).html(html);
-        return this;
+        return $(this.el).html(html);
       };
-      return AlbumLink;
+      SidebarAlbumView.prototype.click = function() {
+        app.gridView.showAlbum(this.model);
+        return false;
+      };
+      return SidebarAlbumView;
     })();
     SidebarView = (function() {
       __extends(SidebarView, Backbone.View);
       function SidebarView() {
-        this.addAll = __bind(this.addAll, this);
-        this.addOne = __bind(this.addOne, this);
         SidebarView.__super__.constructor.apply(this, arguments);
       }
       SidebarView.prototype.el = $('#sidebar');
       SidebarView.prototype.events = {
-        'click .new-album': 'addAlbum',
-        'click #new-album-submit': 'newAlbumSubmit',
-        'click .close': 'closeDialog'
+        'click #new-album-link': 'newAlbum',
+        'click .close': 'close',
+        'click #new-album-submit': 'createNewAlbum',
+        'click #add-selection-to-album': 'addToAlbum'
       };
       SidebarView.prototype.initialize = function() {
-        this.newAlbum = $('#new-album');
-        this.albums = new AlbumCollection;
-        this.albums.bind('add', this.addOne);
-        this.albums.bind('reset', this.addAll);
-        this.albums.bind('all', this.render);
-        this.render();
-        return this.albums.fetch();
+        this.collection.bind('reset', this.render, this);
+        this.collection.bind('add', this.add, this);
+        return this.newAlbumBox = $('#new-album');
       };
-      SidebarView.prototype.addOne = function(album) {
-        var view;
-        view = new AlbumLink({
+      SidebarView.prototype.add = function(album) {
+        var albumView;
+        albumView = new SidebarAlbumView({
           model: album
         });
-        return this.el.append(view.render().el);
-      };
-      SidebarView.prototype.addAll = function() {
-        return this.albums.each(this.addOne);
-      };
-      SidebarView.prototype.newAlbumSubmit = function() {
-        var albumName, model;
-        albumName = $('#new-album-name').val();
-        model = new Album({
-          name: albumName
-        });
-        model.save();
-        this.albums.add(model);
-        $('#new-album-name').val('');
-        return this.newAlbum.hide();
-      };
-      SidebarView.prototype.addAlbum = function() {
-        var left;
-        left = (app.app.width - 500) / 2;
-        this.newAlbum.css({
-          left: left,
-          right: left
-        });
-        this.newAlbum.show();
-        return false;
-      };
-      SidebarView.prototype.closeDialog = function() {
-        this.newAlbum.hide();
-        return false;
+        return this.el.append(albumView.el);
       };
       SidebarView.prototype.render = function() {
-        var html;
-        html = "<li><a class=\"new-album\" href=\"\">Add new album</a></li>";
-        $(this.el).append(html);
-        return this;
+        var album, _i, _len, _ref, _results;
+        _ref = this.collection.models;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          album = _ref[_i];
+          _results.push(this.add(album));
+        }
+        return _results;
+      };
+      SidebarView.prototype.newAlbum = function() {
+        this.newAlbumBox.show();
+        return false;
+      };
+      SidebarView.prototype.close = function() {
+        this.newAlbumBox.hide();
+        return false;
+      };
+      SidebarView.prototype.createNewAlbum = function() {
+        var name;
+        name = $('#new-album-name').val();
+        this.collection.create({
+          name: name
+        });
+        return this.close();
+      };
+      SidebarView.prototype.addToAlbum = function() {
+        this.$('#album-selection').show();
+        return false;
       };
       return SidebarView;
+    })();
+    AlbumSelectionView = (function() {
+      __extends(AlbumSelectionView, Backbone.View);
+      function AlbumSelectionView() {
+        AlbumSelectionView.__super__.constructor.apply(this, arguments);
+      }
+      AlbumSelectionView.prototype.el = $('#album-selection');
+      AlbumSelectionView.prototype.events = {
+        'click #confirm-add-to-album': 'confirm',
+        'click .close': 'close'
+      };
+      AlbumSelectionView.prototype.initialize = function() {
+        return this.collection.bind('all', this.render, this);
+      };
+      AlbumSelectionView.prototype.render = function() {
+        var album, _i, _len, _ref, _results;
+        _ref = this.collection.models;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          album = _ref[_i];
+          _results.push(this.renderOne(album));
+        }
+        return _results;
+      };
+      AlbumSelectionView.prototype.renderOne = function(album) {
+        var html;
+        html = "<li>\n  <input type=\"checkbox\" value=\"" + (album.get('id')) + "\" />\n  " + (album.get('name')) + "\n</li>";
+        return this.$('ul').append(html);
+      };
+      AlbumSelectionView.prototype.close = function() {
+        this.el.hide();
+        return false;
+      };
+      AlbumSelectionView.prototype.confirm = function() {
+        var albums, checked, i, original, photo, values, _i, _len, _ref;
+        checked = this.$('input:checked');
+        values = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = checked.length; _i < _len; _i++) {
+            i = checked[_i];
+            _results.push(parseInt(i.value));
+          }
+          return _results;
+        })();
+        _ref = app.photos.selected();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          photo = _ref[_i];
+          original = photo.get('albums');
+          albums = _.union(original, values);
+          console.log(albums);
+          photo.set({
+            albums: albums
+          });
+        }
+        return false;
+      };
+      return AlbumSelectionView;
     })();
     PhotoView = (function() {
       __extends(PhotoView, Backbone.View);
       function PhotoView() {
-        this.render = __bind(this.render, this);
-        this.showLarge = __bind(this.showLarge, this);
-        this.toggleSelect = __bind(this.toggleSelect, this);
         PhotoView.__super__.constructor.apply(this, arguments);
       }
       PhotoView.prototype.tagName = 'div';
       PhotoView.prototype.className = 'photo';
       PhotoView.prototype.events = {
-        'click img': 'toggleSelect',
-        'dblclick img': 'showLarge'
+        'click': 'toggleSelected',
+        'dblclick': 'showBigger'
       };
       PhotoView.prototype.initialize = function() {
-        return this.model.bind('change', this.render);
+        this.render();
+        return this.model.bind('change', this.render, this);
       };
-      PhotoView.prototype.toggleSelect = function() {
+      PhotoView.prototype.render = function() {
+        var html, photo;
+        photo = this.model.toJSON();
+        html = "<img src=\"/photo/" + photo.sha + "_100.jpg\" />";
         if (this.model.get('selected')) {
+          $(this.el).addClass('selected-photo');
+        } else {
+          $(this.el).removeClass('selected-photo');
+        }
+        return $(this.el).html(html);
+      };
+      PhotoView.prototype.toggleSelected = function() {
+        var current;
+        current = this.model.get('selected');
+        if (current) {
           return this.model.set({
             selected: false
           });
@@ -170,180 +237,100 @@
           });
         }
       };
-      PhotoView.prototype.showLarge = function() {
-        var view;
-        view = new Viewer({
-          model: this.model
-        });
-        return view.render();
-      };
-      PhotoView.prototype.render = function() {
-        var html;
-        html = "<img src=\"/photo/" + (this.model.get('sha')) + "_100.jpg\" />";
-        if (this.model.get('selected')) {
-          $(this.el).addClass('selected-photo');
-        } else {
-          $(this.el).removeClass('selected-photo');
-        }
-        $(this.el).html(html);
-        return this;
+      PhotoView.prototype.showBigger = function() {
+        return app.viewer.set(this.model);
       };
       return PhotoView;
     })();
-    Viewer = (function() {
-      __extends(Viewer, Backbone.View);
-      function Viewer() {
-        Viewer.__super__.constructor.apply(this, arguments);
+    ViewerView = (function() {
+      __extends(ViewerView, Backbone.View);
+      function ViewerView() {
+        ViewerView.__super__.constructor.apply(this, arguments);
       }
-      Viewer.prototype.el = $('#viewer');
-      Viewer.prototype.events = {
-        'click img': 'close'
+      ViewerView.prototype.el = $('#viewer');
+      ViewerView.prototype.events = {
+        'click': 'hide'
       };
-      Viewer.prototype.close = function() {
+      ViewerView.prototype.initialize = function() {
+        var width;
+        width = $('body').width();
+        return $(this.el).css({
+          left: (width - 800) / 2
+        });
+      };
+      ViewerView.prototype.set = function(photo) {
+        var height, html, offset;
+        html = "<img src=\"/photo/" + (photo.get('sha')) + "_800.jpg\" />";
+        $(this.el).html(html);
+        offset = $(window).scrollTop();
+        height = $(window).height();
+        $(this.el).css({
+          top: offset + ((height - 573) / 2)
+        });
+        return $(this.el).show();
+      };
+      ViewerView.prototype.hide = function() {
         return $(this.el).hide();
       };
-      Viewer.prototype.render = function() {
-        var html, left;
-        html = "<img src=\"/photo/" + (this.model.get('sha')) + "_800.jpg\" />";
-        $(this.el).html(html);
-        left = (app.app.width - 840) / 2;
-        $(this.el).css({
-          left: left,
-          right: left
-        });
-        $(this.el).show();
-        return this;
-      };
-      return Viewer;
+      return ViewerView;
     })();
     GridView = (function() {
       __extends(GridView, Backbone.View);
       function GridView() {
-        this.render = __bind(this.render, this);
-        this.confirmAddToAlbum = __bind(this.confirmAddToAlbum, this);
-        this.addToSelection = __bind(this.addToSelection, this);
-        this.getCount = __bind(this.getCount, this);
-        this.addAll = __bind(this.addAll, this);
-        this.addOne = __bind(this.addOne, this);
         GridView.__super__.constructor.apply(this, arguments);
       }
-      GridView.prototype.el = $('#photos');
-      GridView.prototype.events = {
-        'click #get-count': 'getCount',
-        'click #add-selection-to-album': 'addToSelection',
-        'click #confirm-add-to-album': 'confirmAddToAlbum',
-        'click .close': 'closeDialog'
-      };
+      GridView.prototype.el = $('#grid');
       GridView.prototype.initialize = function() {
-        this.delegateEvents();
-        return this.loadPhotos();
+        this.collection.bind('reset', this.render, this);
+        return this.collection.bind('add', this.add, this);
       };
-      GridView.prototype.loadPhotos = function(album) {
-        this.clear();
-        this.photos = new PhotoCollection;
-        if (album) {
-          this.photos.url = "/albums/" + (album.get('id')) + "/photos";
-        }
-        this.photos.bind('add', this.addOne);
-        this.photos.bind('reset', this.addAll);
-        this.photos.bind('all', this.render);
-        return this.photos.fetch();
-      };
-      GridView.prototype.clear = function() {
-        return $('.photo').remove();
-      };
-      GridView.prototype.addOne = function(photo) {
-        var view;
-        view = new PhotoView({
+      GridView.prototype.add = function(photo) {
+        var photoView;
+        photoView = new PhotoView({
           model: photo
         });
-        return this.$('#grid').append(view.render().el);
-      };
-      GridView.prototype.addAll = function() {
-        return this.photos.each(this.addOne);
-      };
-      GridView.prototype.getCount = function() {
-        var count;
-        count = this.photos.selected().length;
-        return console.log(count);
-      };
-      GridView.prototype.addToSelection = function() {
-        this.selection = this.photos.selected();
-        if (this.selection.length === 0) {
-          return false;
-        }
-        this.renderAlbumSelection(app.app.sidebar.albums);
-        return false;
-      };
-      GridView.prototype.renderAlbumSelection = function(albums) {
-        var a, album, html, model, _i, _len, _ref;
-        html = "";
-        _ref = albums.models;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          album = _ref[_i];
-          model = album.toJSON();
-          a = "<li>\n    <input type=\"checkbox\" value=\"" + model.id + "\" />\n    " + model.name + "\n</li>";
-          html += a;
-        }
-        $('#album-selection ul').html(html);
-        return $('#album-selection').show();
-      };
-      GridView.prototype.closeDialog = function() {
-        $('#album-selection').hide();
-        $('#album-selection li input:checked').attr('checked', '');
-        return false;
-      };
-      GridView.prototype.confirmAddToAlbum = function() {
-        var original, photo, s, selected, _i, _j, _len, _len2, _ref;
-        selected = $('#album-selection li input:checked');
-        selected = (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = selected.length; _i < _len; _i++) {
-            s = selected[_i];
-            _results.push(s.value);
-          }
-          return _results;
-        })();
-        console.log(this.selection);
-        _ref = this.selection;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          photo = _ref[_i];
-          original = photo.get('albums');
-          for (_j = 0, _len2 = selected.length; _j < _len2; _j++) {
-            s = selected[_j];
-            s = parseInt(s, 10);
-            if (__indexOf.call(original, s) < 0) {
-              original.push(s);
-            }
-          }
-          photo.save({
-            albums: original,
-            silent: true
-          });
-        }
-        $('#album-selection').hide();
-        return false;
+        return this.el.append(photoView.el);
       };
       GridView.prototype.render = function() {
-        var count;
-        count = this.photos.selected().length;
-        this.$('#selected-count').text(count);
-        return this;
+        var photo, _i, _len, _ref;
+        _ref = this.collection.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          photo = _ref[_i];
+          this.add(photo);
+        }
+        return $('#loading').hide();
+      };
+      GridView.prototype.clear = function() {
+        return this.el.empty();
+      };
+      GridView.prototype.showAlbum = function(album) {
+        var photo, photos, _i, _len, _results;
+        photos = this.collection.byAlbum(album);
+        this.clear();
+        _results = [];
+        for (_i = 0, _len = photos.length; _i < _len; _i++) {
+          photo = photos[_i];
+          _results.push(this.add(photo));
+        }
+        return _results;
       };
       return GridView;
     })();
-    Application = (function() {
-      __extends(Application, Backbone.View);
-      function Application() {
-        Application.__super__.constructor.apply(this, arguments);
+    CounterView = (function() {
+      __extends(CounterView, Backbone.View);
+      function CounterView() {
+        CounterView.__super__.constructor.apply(this, arguments);
       }
-      Application.prototype.initialize = function() {
-        this.grid = new GridView;
-        this.sidebar = new SidebarView;
-        return this.width = $('body').width();
+      CounterView.prototype.el = $('#selected-count');
+      CounterView.prototype.initialize = function() {
+        return this.collection.bind('all', this.render, this);
       };
-      return Application;
+      CounterView.prototype.render = function() {
+        var count;
+        count = this.collection.selected().length;
+        return $(this.el).text(count);
+      };
+      return CounterView;
     })();
     RembrantRouter = (function() {
       __extends(RembrantRouter, Backbone.Router);
@@ -353,10 +340,26 @@
       RembrantRouter.prototype.routes = {
         '': 'home'
       };
-      RembrantRouter.prototype.initialize = function() {
-        return this.app = new Application;
+      RembrantRouter.prototype.initialize = function() {};
+      RembrantRouter.prototype.home = function() {
+        this.photos = new PhotoCollection;
+        this.albums = new AlbumCollection;
+        this.sidebarView = new SidebarView({
+          collection: this.albums
+        });
+        this.gridView = new GridView({
+          collection: this.photos
+        });
+        this.viewer = new ViewerView;
+        this.counter = new CounterView({
+          collection: this.photos
+        });
+        this.albumSelectionView = new AlbumSelectionView({
+          collection: this.albums
+        });
+        this.photos.fetch();
+        return this.albums.fetch();
       };
-      RembrantRouter.prototype.home = function() {};
       return RembrantRouter;
     })();
     app = new RembrantRouter;
