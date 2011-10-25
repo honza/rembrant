@@ -13,6 +13,7 @@ from jinja2 import Environment, FileSystemLoader
 DEBUG = True
 LIBRARY_NAME = 'library.json'
 
+
 # Utilities
 
 def dt2str(d):
@@ -27,7 +28,7 @@ def get_sha(filename):
     f = open(filename)
     while True:
         try:
-            data = f.read(2**20)
+            data = f.read(2 ** 20)
         except IOError:
             data = None
         if not data:
@@ -275,8 +276,8 @@ class Photo(Model):
         ``sha_width.jpg``.
         """
         im = Image.open(self.full_path)
-        wpercent = (width/float(im.size[0]))
-        hsize = int((float(im.size[1])*float(wpercent)))
+        wpercent = (width / float(im.size[0]))
+        hsize = int((float(im.size[1]) * float(wpercent)))
         im.thumbnail((width, hsize))
         path = "%s_%d.jpg" % (self.sha, width)
         im.save(os.path.join(self.cache_dir, path), 'JPEG')
@@ -382,6 +383,7 @@ class Renderer(object):
         self._render_home()
 
 # Commands
+
 
 @baker.command
 def init():
