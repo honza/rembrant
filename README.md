@@ -58,8 +58,11 @@ Open the terminal and type:
     $ python rembrant.py init
     $ vim library.json
     $ ... update settings
-    $ python rembrant.py import
-    $ python rembrant.py serve
+    $ python rembrant.py load
+    $ python rembrant.py runserver
+    $ ...
+    $ python rembrant.py export
+    $ python rembrant.py deploy
 
 Before you can deploy your gallery, you need to fill out the `aws_key`,
 `aws_secret` and `aws_bucket` fields in your `library.json` file.
@@ -125,6 +128,10 @@ BSD. Short and sweet. Check the `LICENSE` file.
 
 Changelog
 ---------
+
+* `0.3.0`
+    * Add `scan` command
+    * Better logging
 
 * `0.2.0`
     * All commands except for scan work
