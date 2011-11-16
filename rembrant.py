@@ -137,7 +137,7 @@ class Library(object):
         # Parse photos
         photos = library['photos']
         for photo in photos:
-            self.add_photo(photo['id'], photo['filename'], photo['sha'],
+            self.add_photo(photo['filename'], photo['id'], photo['sha'],
                     photo['albums'])
 
         # Parse albums
@@ -179,10 +179,12 @@ class Library(object):
         library_file.write(data)
         library_file.close()
 
-    def add_photo(self, id, filename, sha=None, albums=[]):
+    def add_photo(self, filename, id=None, sha=None, albums=[1]):
         """
         Create a new ``Photo`` instance and add it the ``photos`` collection.
         """
+        if not id:
+            id = self.photos._highest_id() + 1
         photo = Photo(self.source, self.cache, id, filename, sha, albums)
         self.photos.append(photo)
 
@@ -411,7 +413,7 @@ def load():
     counter = 1
 
     for p in paths:
-        library.add_photo(counter, p, albums=[1])
+        library.add_photo(p, counter, albums=[1])
         counter += 1
 
     library.save()
@@ -419,7 +421,29 @@ def load():
 
 @baker.command
 def scan():
-    pass
+    library = Library()
+
+    existing_filenames = []
+    for photo in library.photos:
+        existing_filenames.append(photo.filename)
+
+    new_filenames = []
+
+    for p in os.walk(library.source, followlinks=False):
+        for f in p[2]:
+            if f.startswith('.'):
+                continue
+            if f not in existing_filenames:
+                new_filenames.append(f)
+
+    if new_filenames:
+        for filename in new_filenames:
+            library.add_photo(filename)
+
+        library.save()
+
+    else:
+        print 'No new files to import.'
 
 
 @baker.command
