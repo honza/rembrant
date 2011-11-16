@@ -412,7 +412,10 @@ def load():
 
     counter = 1
 
+    total = len(paths)
+    # Deploy changed files
     for p in paths:
+        print "[%d/%d] %s" % (counter, total, p)
         library.add_photo(p, counter, albums=[1])
         counter += 1
 
@@ -437,8 +440,12 @@ def scan():
                 new_filenames.append(f)
 
     if new_filenames:
+        counter = 1
+        total = len(new_filenames)
         for filename in new_filenames:
+            print "[%d/%d] %s" % (counter, total, filename)
             library.add_photo(filename)
+            counter += 1
 
         library.save()
 
