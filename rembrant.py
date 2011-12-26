@@ -200,6 +200,17 @@ class Library(object):
     def get_photos_for_album(self, id):
         return self.photos.filter(albums=id)
 
+    def unmark_unsorted(self):
+        """
+        Make sure that images in albums aren't at the same time set to be
+        Unsorted
+        """
+        for photo in self.photos:
+            if len(photo.albums) > 1:
+                if 1 in photo.albums:
+                    index = photo.albums.index(1)
+                    photo.albums.pop(index)
+
 
 class Album(Model):
 
@@ -564,6 +575,7 @@ def update_photo(id):
                 setattr(photo, key, i)
 
     library.photos.update(id, photo)
+    library.unmark_unsorted()
     library.save()
     return photo.serialize()
 
