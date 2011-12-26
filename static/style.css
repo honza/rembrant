@@ -107,7 +107,8 @@ body {
 }
 
 #grid {
-    background: #fff;;
+    background: #fff;
+    min-height: 300px;
 }
 
 .album {

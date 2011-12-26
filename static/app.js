@@ -97,9 +97,6 @@
       SidebarAlbumView.prototype.render = function() {
         var html;
         html = "<a href=\"\">" + (this.model.get('name')) + "</a>";
-        if (this.model.get('name') === 'Unsorted') {
-          $(this.el).addClass('album-active');
-        }
         return $(this.el).html(html);
       };
 
@@ -254,16 +251,15 @@
         _ref = app.photos.selected();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           photo = _ref[_i];
-          console.log(photo);
           original = photo.get('albums');
           albums = _.union(original, values);
-          console.log(albums);
           photo.set({
             albums: albums
           });
           photo.save();
+          photo.view.remove();
         }
-        this.remove();
+        this.el.hide();
         return false;
       };
 
@@ -288,6 +284,7 @@
       };
 
       PhotoView.prototype.initialize = function() {
+        this.model.view = this;
         this.render();
         return this.model.bind('change', this.render, this);
       };

@@ -46,8 +46,6 @@ $ ->
       html = """
       <a href="">#{@model.get 'name'}</a>
       """
-      if @model.get('name') is 'Unsorted'
-        $(@el).addClass 'album-active'
       $(@el).html html
 
     click: ->
@@ -143,14 +141,13 @@ $ ->
         return false
 
       for photo in app.photos.selected()
-        console.log photo
         original = photo.get 'albums'
         albums = _.union original, values
-        console.log albums
         photo.set albums: albums
         do photo.save
+        do photo.view.remove
 
-      do @remove
+      do @el.hide
 
       false
 
@@ -163,6 +160,7 @@ $ ->
       'dblclick': 'showBigger'
 
     initialize: ->
+      @model.view = @
       do @render
       @model.bind 'change', @render, @
 
