@@ -236,8 +236,7 @@
       };
 
       AlbumSelectionView.prototype.confirm = function() {
-        var albums, checked, i, original, photo, selected, values, _i, _len;
-        selected = app.photos.selected();
+        var albums, checked, i, original, photo, values, _i, _len, _ref;
         checked = this.$('input:checked');
         values = (function() {
           var _i, _len, _results;
@@ -252,15 +251,19 @@
           alert('Please select at least one.');
           return false;
         }
-        for (_i = 0, _len = selected.length; _i < _len; _i++) {
-          photo = selected[_i];
+        _ref = app.photos.selected();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          photo = _ref[_i];
+          console.log(photo);
           original = photo.get('albums');
           albums = _.union(original, values);
           console.log(albums);
           photo.set({
             albums: albums
           });
+          photo.save();
         }
+        this.remove();
         return false;
       };
 

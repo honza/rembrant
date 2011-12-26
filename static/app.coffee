@@ -134,7 +134,6 @@ $ ->
       false
 
     confirm: ->
-      selected = app.photos.selected()
       checked = @$('input:checked')
 
       values = (parseInt i.value for i in checked)
@@ -143,11 +142,15 @@ $ ->
         alert 'Please select at least one.'
         return false
 
-      for photo in selected
+      for photo in app.photos.selected()
+        console.log photo
         original = photo.get 'albums'
         albums = _.union original, values
         console.log albums
         photo.set albums: albums
+        do photo.save
+
+      do @remove
 
       false
 
