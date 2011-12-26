@@ -11,6 +11,13 @@ body {
     background: #333;
 }
 
+#header h2 {
+    margin: 0 0 0 5px;
+    padding: 6px 0 8px;
+    color: #ececec;
+    font-size: 24px;
+}
+
 #wrap {
     overflow: auto;
     padding: 0 10px;
