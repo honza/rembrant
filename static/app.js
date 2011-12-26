@@ -97,10 +97,15 @@
       SidebarAlbumView.prototype.render = function() {
         var html;
         html = "<a href=\"\">" + (this.model.get('name')) + "</a>";
+        if (this.model.get('name') === 'Unsorted') {
+          $(this.el).addClass('album-active');
+        }
         return $(this.el).html(html);
       };
 
       SidebarAlbumView.prototype.click = function() {
+        $('.album').removeClass('album-active');
+        $(this.el).addClass('album-active');
         app.gridView.showAlbum(this.model);
         return false;
       };

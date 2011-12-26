@@ -1,5 +1,5 @@
 body {
-    background: #ececec;
+    background: #ccc;
     font-family: 'Helvetica';
     margin: 0;
     padding: 0;
@@ -92,4 +92,22 @@ body {
 
 #album-selection li {
     list-style: none;
+}
+
+#grid {
+    background: #fff;;
+}
+
+.album {
+    margin-right: -1px;
+    padding: 5px;
+}
+
+.album-active {
+    background: #fff;
+}
+
+.album a {
+    color: #333;
+    text-decoration: none;
 }

@@ -46,9 +46,13 @@ $ ->
       html = """
       <a href="">#{@model.get 'name'}</a>
       """
+      if @model.get('name') is 'Unsorted'
+        $(@el).addClass 'album-active'
       $(@el).html html
 
     click: ->
+      $('.album').removeClass 'album-active'
+      $(@el).addClass 'album-active'
       app.gridView.showAlbum @model
       false
 
