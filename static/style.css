@@ -1,14 +1,23 @@
 body {
     background: #ececec;
     font-family: 'Helvetica';
+    margin: 0;
+    padding: 0;
+}
+
+#header {
+    width: 100%;
+    height: 40px;
+    background: #333;
 }
 
 #wrap {
     overflow: auto;
+    padding: 0 10px;
 }
 
 #sidebar {
-    width: 10%;
+    width: 20%;
     float: left;
 }
 
@@ -16,8 +25,12 @@ body {
     list-style: none;
 }
 
+#bottom {
+    margin-top: 50px;
+}
+
 #photos {
-    width: 90%;
+    width: 80%;
     float: right;
     overflow: auto;
 }
@@ -74,7 +87,7 @@ body {
 
 #album-selection ul {
     padding: 0;
-    margin: 0;
+    margin: 0 0 20px;
 }
 
 #album-selection li {

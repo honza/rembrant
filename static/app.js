@@ -1,113 +1,144 @@
 (function() {
-  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
-    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
-    function ctor() { this.constructor = child; }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor;
-    child.__super__ = parent.prototype;
-    return child;
-  }, __indexOf = Array.prototype.indexOf || function(item) {
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i] === item) return i;
-    }
-    return -1;
-  };
+  var __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
   $(function() {
     var Album, AlbumCollection, AlbumSelectionView, CounterView, GridView, Photo, PhotoCollection, PhotoView, RembrantRouter, SidebarAlbumView, SidebarView, ViewerView, app;
-    Photo = (function() {
-      __extends(Photo, Backbone.Model);
+    Photo = (function(_super) {
+
+      __extends(Photo, _super);
+
       function Photo() {
         Photo.__super__.constructor.apply(this, arguments);
       }
+
       Photo.prototype.defaults = {
         selected: false
       };
+
       return Photo;
-    })();
-    Album = (function() {
-      __extends(Album, Backbone.Model);
+
+    })(Backbone.Model);
+    Album = (function(_super) {
+
+      __extends(Album, _super);
+
       function Album() {
         Album.__super__.constructor.apply(this, arguments);
       }
+
       return Album;
-    })();
-    PhotoCollection = (function() {
-      __extends(PhotoCollection, Backbone.Collection);
+
+    })(Backbone.Model);
+    PhotoCollection = (function(_super) {
+
+      __extends(PhotoCollection, _super);
+
       function PhotoCollection() {
         PhotoCollection.__super__.constructor.apply(this, arguments);
       }
+
       PhotoCollection.prototype.model = Photo;
+
       PhotoCollection.prototype.url = '/photos';
+
       PhotoCollection.prototype.selected = function() {
         return this.filter(function(photo) {
           return photo.get('selected');
         });
       };
+
       PhotoCollection.prototype.byAlbum = function(album) {
         return this.filter(function(photo) {
           var _ref;
           return _ref = album.id, __indexOf.call(photo.get('albums'), _ref) >= 0;
         });
       };
+
       return PhotoCollection;
-    })();
-    AlbumCollection = (function() {
-      __extends(AlbumCollection, Backbone.Collection);
+
+    })(Backbone.Collection);
+    AlbumCollection = (function(_super) {
+
+      __extends(AlbumCollection, _super);
+
       function AlbumCollection() {
         AlbumCollection.__super__.constructor.apply(this, arguments);
       }
+
       AlbumCollection.prototype.model = Album;
+
       AlbumCollection.prototype.url = '/albums';
+
       return AlbumCollection;
-    })();
-    SidebarAlbumView = (function() {
-      __extends(SidebarAlbumView, Backbone.View);
+
+    })(Backbone.Collection);
+    SidebarAlbumView = (function(_super) {
+
+      __extends(SidebarAlbumView, _super);
+
       function SidebarAlbumView() {
         SidebarAlbumView.__super__.constructor.apply(this, arguments);
       }
+
       SidebarAlbumView.prototype.tagname = 'div';
+
       SidebarAlbumView.prototype.className = 'album';
+
       SidebarAlbumView.prototype.events = {
         'click a': 'click'
       };
+
       SidebarAlbumView.prototype.initialize = function() {
         return this.render();
       };
+
       SidebarAlbumView.prototype.render = function() {
         var html;
         html = "<a href=\"\">" + (this.model.get('name')) + "</a>";
         return $(this.el).html(html);
       };
+
       SidebarAlbumView.prototype.click = function() {
         app.gridView.showAlbum(this.model);
         return false;
       };
+
       return SidebarAlbumView;
-    })();
-    SidebarView = (function() {
-      __extends(SidebarView, Backbone.View);
+
+    })(Backbone.View);
+    SidebarView = (function(_super) {
+
+      __extends(SidebarView, _super);
+
       function SidebarView() {
         SidebarView.__super__.constructor.apply(this, arguments);
       }
+
       SidebarView.prototype.el = $('#sidebar');
+
       SidebarView.prototype.events = {
         'click #new-album-link': 'newAlbum',
         'click .close': 'close',
         'click #new-album-submit': 'createNewAlbum',
         'click #add-selection-to-album': 'addToAlbum'
       };
+
       SidebarView.prototype.initialize = function() {
         this.collection.bind('reset', this.render, this);
         this.collection.bind('add', this.add, this);
         return this.newAlbumBox = $('#new-album');
       };
+
       SidebarView.prototype.add = function(album) {
         var albumView;
         albumView = new SidebarAlbumView({
           model: album
         });
-        return this.el.append(albumView.el);
+        return $('#top').append(albumView.el);
       };
+
       SidebarView.prototype.render = function() {
         var album, _i, _len, _ref, _results;
         _ref = this.collection.models;
@@ -118,14 +149,17 @@
         }
         return _results;
       };
+
       SidebarView.prototype.newAlbum = function() {
         this.newAlbumBox.show();
         return false;
       };
+
       SidebarView.prototype.close = function() {
         this.newAlbumBox.hide();
         return false;
       };
+
       SidebarView.prototype.createNewAlbum = function() {
         var name;
         name = $('#new-album-name').val();
@@ -134,25 +168,46 @@
         });
         return this.close();
       };
+
       SidebarView.prototype.addToAlbum = function() {
+        var selected;
+        selected = app.photos.selected();
+        if (selected.length === 0) return false;
         this.$('#album-selection').show();
         return false;
       };
+
       return SidebarView;
-    })();
-    AlbumSelectionView = (function() {
-      __extends(AlbumSelectionView, Backbone.View);
+
+    })(Backbone.View);
+    AlbumSelectionView = (function(_super) {
+
+      __extends(AlbumSelectionView, _super);
+
       function AlbumSelectionView() {
         AlbumSelectionView.__super__.constructor.apply(this, arguments);
       }
+
       AlbumSelectionView.prototype.el = $('#album-selection');
+
       AlbumSelectionView.prototype.events = {
         'click #confirm-add-to-album': 'confirm',
         'click .close': 'close'
       };
+
       AlbumSelectionView.prototype.initialize = function() {
-        return this.collection.bind('all', this.render, this);
+        this.collection.bind('all', this.render, this);
+        return this.center();
       };
+
+      AlbumSelectionView.prototype.center = function() {
+        var width;
+        width = $(window).width();
+        return this.el.css({
+          left: (width - 500) / 2
+        });
+      };
+
       AlbumSelectionView.prototype.render = function() {
         var album, _i, _len, _ref, _results;
         _ref = this.collection.models;
@@ -163,17 +218,21 @@
         }
         return _results;
       };
+
       AlbumSelectionView.prototype.renderOne = function(album) {
         var html;
         html = "<li>\n  <input type=\"checkbox\" value=\"" + (album.get('id')) + "\" />\n  " + (album.get('name')) + "\n</li>";
         return this.$('ul').append(html);
       };
+
       AlbumSelectionView.prototype.close = function() {
         this.el.hide();
         return false;
       };
+
       AlbumSelectionView.prototype.confirm = function() {
-        var albums, checked, i, original, photo, values, _i, _len, _ref;
+        var albums, checked, i, original, photo, selected, values, _i, _len;
+        selected = app.photos.selected();
         checked = this.$('input:checked');
         values = (function() {
           var _i, _len, _results;
@@ -184,9 +243,12 @@
           }
           return _results;
         })();
-        _ref = app.photos.selected();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          photo = _ref[_i];
+        if (values.length === 0) {
+          alert('Please select at least one.');
+          return false;
+        }
+        for (_i = 0, _len = selected.length; _i < _len; _i++) {
+          photo = selected[_i];
           original = photo.get('albums');
           albums = _.union(original, values);
           console.log(albums);
@@ -196,23 +258,32 @@
         }
         return false;
       };
+
       return AlbumSelectionView;
-    })();
-    PhotoView = (function() {
-      __extends(PhotoView, Backbone.View);
+
+    })(Backbone.View);
+    PhotoView = (function(_super) {
+
+      __extends(PhotoView, _super);
+
       function PhotoView() {
         PhotoView.__super__.constructor.apply(this, arguments);
       }
+
       PhotoView.prototype.tagName = 'div';
+
       PhotoView.prototype.className = 'photo';
+
       PhotoView.prototype.events = {
         'click': 'toggleSelected',
         'dblclick': 'showBigger'
       };
+
       PhotoView.prototype.initialize = function() {
         this.render();
         return this.model.bind('change', this.render, this);
       };
+
       PhotoView.prototype.render = function() {
         var html, photo;
         photo = this.model.toJSON();
@@ -224,6 +295,7 @@
         }
         return $(this.el).html(html);
       };
+
       PhotoView.prototype.toggleSelected = function() {
         var current;
         current = this.model.get('selected');
@@ -237,20 +309,28 @@
           });
         }
       };
+
       PhotoView.prototype.showBigger = function() {
         return app.viewer.set(this.model);
       };
+
       return PhotoView;
-    })();
-    ViewerView = (function() {
-      __extends(ViewerView, Backbone.View);
+
+    })(Backbone.View);
+    ViewerView = (function(_super) {
+
+      __extends(ViewerView, _super);
+
       function ViewerView() {
         ViewerView.__super__.constructor.apply(this, arguments);
       }
+
       ViewerView.prototype.el = $('#viewer');
+
       ViewerView.prototype.events = {
         'click': 'hide'
       };
+
       ViewerView.prototype.initialize = function() {
         var width;
         width = $('body').width();
@@ -258,6 +338,7 @@
           left: (width - 800) / 2
         });
       };
+
       ViewerView.prototype.set = function(photo) {
         var height, html, offset;
         html = "<img src=\"/photo/" + (photo.get('sha')) + "_800.jpg\" />";
@@ -269,21 +350,29 @@
         });
         return $(this.el).show();
       };
+
       ViewerView.prototype.hide = function() {
         return $(this.el).hide();
       };
+
       return ViewerView;
-    })();
-    GridView = (function() {
-      __extends(GridView, Backbone.View);
+
+    })(Backbone.View);
+    GridView = (function(_super) {
+
+      __extends(GridView, _super);
+
       function GridView() {
         GridView.__super__.constructor.apply(this, arguments);
       }
+
       GridView.prototype.el = $('#grid');
+
       GridView.prototype.initialize = function() {
         this.collection.bind('reset', this.render, this);
         return this.collection.bind('add', this.add, this);
       };
+
       GridView.prototype.add = function(photo) {
         var photoView;
         photoView = new PhotoView({
@@ -291,6 +380,7 @@
         });
         return this.el.append(photoView.el);
       };
+
       GridView.prototype.render = function() {
         var photo, _i, _len, _ref;
         _ref = this.collection.models;
@@ -300,9 +390,11 @@
         }
         return $('#loading').hide();
       };
+
       GridView.prototype.clear = function() {
         return this.el.empty();
       };
+
       GridView.prototype.showAlbum = function(album) {
         var photo, photos, _i, _len, _results;
         photos = this.collection.byAlbum(album);
@@ -314,33 +406,47 @@
         }
         return _results;
       };
+
       return GridView;
-    })();
-    CounterView = (function() {
-      __extends(CounterView, Backbone.View);
+
+    })(Backbone.View);
+    CounterView = (function(_super) {
+
+      __extends(CounterView, _super);
+
       function CounterView() {
         CounterView.__super__.constructor.apply(this, arguments);
       }
+
       CounterView.prototype.el = $('#selected-count');
+
       CounterView.prototype.initialize = function() {
         return this.collection.bind('all', this.render, this);
       };
+
       CounterView.prototype.render = function() {
         var count;
         count = this.collection.selected().length;
         return $(this.el).text(count);
       };
+
       return CounterView;
-    })();
-    RembrantRouter = (function() {
-      __extends(RembrantRouter, Backbone.Router);
+
+    })(Backbone.View);
+    RembrantRouter = (function(_super) {
+
+      __extends(RembrantRouter, _super);
+
       function RembrantRouter() {
         RembrantRouter.__super__.constructor.apply(this, arguments);
       }
+
       RembrantRouter.prototype.routes = {
         '': 'home'
       };
+
       RembrantRouter.prototype.initialize = function() {};
+
       RembrantRouter.prototype.home = function() {
         this.photos = new PhotoCollection;
         this.albums = new AlbumCollection;
@@ -360,9 +466,12 @@
         this.photos.fetch();
         return this.albums.fetch();
       };
+
       return RembrantRouter;
-    })();
+
+    })(Backbone.Router);
     app = new RembrantRouter;
     return Backbone.history.start();
   });
+
 }).call(this);

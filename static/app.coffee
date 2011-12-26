@@ -67,7 +67,7 @@ $ ->
 
     add: (album) ->
       albumView = new SidebarAlbumView model: album
-      @el.append albumView.el
+      $('#top').append albumView.el
 
     render: ->
       for album in @collection.models
@@ -90,6 +90,10 @@ $ ->
       do @close
 
     addToAlbum: ->
+      selected = app.photos.selected()
+      if selected.length is 0
+        return false
+
       do @$('#album-selection').show
       false
 
@@ -101,6 +105,12 @@ $ ->
 
     initialize: ->
       @collection.bind 'all', @render, @
+      do @center
+
+    center: ->
+      width = do $(window).width
+      @el.css
+        left: (width - 500) / 2
 
     render: ->
       for album in @collection.models
@@ -120,10 +130,16 @@ $ ->
       false
 
     confirm: ->
+      selected = app.photos.selected()
       checked = @$('input:checked')
+
       values = (parseInt i.value for i in checked)
 
-      for photo in app.photos.selected()
+      if values.length is 0
+        alert 'Please select at least one.'
+        return false
+
+      for photo in selected
         original = photo.get 'albums'
         albums = _.union original, values
         console.log albums

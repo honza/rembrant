@@ -9,26 +9,35 @@
         <script src="/app.js" type="text/javascript"></script>
     </head>
     <body>
+        <div id="header">
+
+        </div>
         <div id="wrap">
             <div id="sidebar">
-                <h2>Albums</h2>
-                <a id="new-album-link" href="">New album</a>
-                <div id="album-selection">
-                    <ul></ul>
-                    <input type="submit" value="Add" id="confirm-add-to-album" />
-                    <a href="#" class="close">Close</a>
+                <div id="top">
+                    <h2>Albums</h2>
                 </div>
-                Selected: <span id="selected-count">0</span><br>
-                <a id="add-selection-to-album" href="">Add selection to album</a>
-                <div id="new-album">
-                    <p>
-                        <label for="new-album-name">Album name:</label>
-                        <input type="text" id="new-album-name" />
-                    </p>
-                    <p>
-                        <input type="submit" id="new-album-submit" value="Save" />
-                    </p>
-                    <a href="#" class="close">Close</a>
+                <div id="bottom">
+                    <div id="album-selection">
+                        <p>Select an album or albums to which you want to add your selection</p>
+                        <ul></ul>
+                        <input type="submit" value="Add" id="confirm-add-to-album" />
+                        <a href="#" class="close">Close</a>
+                    </div>
+                    <a id="add-selection-to-album" href="">Add selection to album</a>
+                    <br>
+                    Selected: <span id="selected-count">0</span>
+                    <div id="new-album">
+                        <a id="new-album-link" href="">New album</a>
+                        <p>
+                            <label for="new-album-name">Album name:</label>
+                            <input type="text" id="new-album-name" />
+                        </p>
+                        <p>
+                            <input type="submit" id="new-album-submit" value="Save" />
+                        </p>
+                        <a href="#" class="close">Close</a>
+                    </div>
                 </div>
             </div>
             <div id="photos">
