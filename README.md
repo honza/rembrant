@@ -5,6 +5,8 @@ Rembrant is a piece of software that helps you organize your photos and create
 online galleries. You run the software locally to create the gallery, add tags
 and collections and then you sync it to your online account on [AWS S3][1].
 
+![image](http://honza.ca/rembrant/rembrant.jpg)
+
 Advantages
 ----------
 
