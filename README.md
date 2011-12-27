@@ -132,6 +132,12 @@ BSD. Short and sweet. Check the `LICENSE` file.
 Changelog
 ---------
 
+* `0.4.0`
+    * Add EXIF data
+    * Implement adding of images to albums
+    * Better styling
+    * Make sure that an image can't be both in an album and *Unsorted*
+
 * `0.3.0`
     * Add `scan` command
     * Better logging

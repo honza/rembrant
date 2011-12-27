@@ -9,6 +9,10 @@ import Image
 from jinja2 import Environment, FileSystemLoader
 
 
+VERSION = '0.4.0'
+__version__ = VERSION
+
+
 # Constants
 
 DEBUG = True
