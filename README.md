@@ -33,6 +33,7 @@ Quick Instalation
 
     $ git clone git://github.com/honza/rembrant.git
     $ cd rembrant
+    $ brew install exiv2
     $ virtualenv env --no-site-packages
     $ source env/bin/activate
     (env) $ pip install -r requirements.txt

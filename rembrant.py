@@ -1,4 +1,5 @@
 import os
+import subprocess
 import json
 import hashlib
 from datetime import datetime
@@ -35,6 +36,36 @@ def get_sha(filename):
             break
         sha.update(data)
     return sha.hexdigest()
+
+
+def read_exif(fn):
+    command = 'exiv2 -p a print %s' % fn
+    result = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    data = result.communicate()[0]
+    lines = data.split('\n')
+
+    data = {}
+
+    for line in lines:
+        if line.startswith('Error'):
+            continue
+        parts = line.split(' ')
+        good_parts = []
+        for p in parts:
+            if p == '':
+                continue
+            good_parts.append(p)
+
+        if not good_parts:
+            continue
+
+
+        key = good_parts[0]
+        value = " ".join(good_parts[3:])
+
+        data[key] = value
+
+    return data
 
 
 # Models
@@ -138,7 +169,7 @@ class Library(object):
         photos = library['photos']
         for photo in photos:
             self.add_photo(photo['filename'], photo['id'], photo['sha'],
-                    photo['albums'])
+                    photo['albums'], photo['exif'])
 
         # Parse albums
         albums = library['albums']
@@ -179,13 +210,13 @@ class Library(object):
         library_file.write(data)
         library_file.close()
 
-    def add_photo(self, filename, id=None, sha=None, albums=[1]):
+    def add_photo(self, filename, id=None, sha=None, albums=[1], exif={}):
         """
         Create a new ``Photo`` instance and add it the ``photos`` collection.
         """
         if not id:
             id = self.photos._highest_id() + 1
-        photo = Photo(self.source, self.cache, id, filename, sha, albums)
+        photo = Photo(self.source, self.cache, id, filename, sha, albums, exif)
         self.photos.append(photo)
 
     def get_album(self, id):
@@ -231,17 +262,19 @@ class Photo(Model):
         'id',
         'filename',
         'sha',
-        'albums'
+        'albums',
+        'exif'
     ]
 
     def __init__(self, source_dir, cache_dir, id, filename, sha=None,
-            albums=[]):
+            albums=[], exif={}):
 
         self.id = id
         self.filename = filename
         self.full_path = os.path.join(source_dir, filename)
         self.sha = sha
         self.albums = albums
+        self.exif = exif
         self.source_dir = source_dir
         self.cache_dir = cache_dir
 
@@ -254,13 +287,20 @@ class Photo(Model):
         if not self.has_thumbs():
             self._make_thumbnails()
 
+        if not self.exif:
+            self._load_exif()
+
     def serialize(self):
         return {
             'id': self.id,
             'filename': self.filename,
             'sha': self.sha,
-            'albums': self.albums
+            'albums': self.albums,
+            'exif': self.exif
         }
+
+    def _load_exif(self):
+        self.exif = read_exif(self.full_path)
 
     def has_thumbs(self):
         small = '%s_%d.jpg' % (self.sha, 100)
