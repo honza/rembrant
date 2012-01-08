@@ -2,12 +2,12 @@ fs = require 'fs'
 path = require 'path'
 _ = require 'underscore'
 {spawn, exec} = require 'child_process'
-thumb = require('./thumbnail.js').thumb
-Photo = require('./photo.coffee').Photo
-exif = require './exif.coffee'
 async = require 'async'
 eco = require 'eco'
-rename = require './rename.coffee'
+thumb = require('./src/thumbnail.js').thumb
+Photo = require('./src/photo.coffee').Photo
+exif = require './src/exif.coffee'
+rename = require './src/rename.coffee'
 
 baseTemplate = fs.readFileSync __dirname + "/views/base.html", "utf-8"
 
