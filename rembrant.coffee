@@ -1,3 +1,8 @@
+# Rembrant - photo gallery software
+# (c) 2011 - Honza Pokorny - All rights reserved
+# Freely available under the terms of the BSD license
+# https://github.com/honza/rembrant
+
 fs = require 'fs'
 path = require 'path'
 _ = require 'underscore'
