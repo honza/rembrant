@@ -1,23 +1,27 @@
 {
-    "name": "rembrant",
-    "description": "Photo library software",
-    "version": "0.0.1",
-    "author": "Honza Pokorny <https://github.com/honza>",
-    "repository": {
-        "url": "git://github.com/honza/rembrant.git",
-        "type": "git"
-    },
-    "dependencies": {
-        "optimist": ">= 0.2.6",
-        "coffee-script": ">= 1.1.2",
-        "underscore": ">= 1.1.7",
-        "imagemagick": ">= 0.1.2"
-    },
-    "engines": {
-        "node": ">= 0.4.11 < 0.7.0"
-    },
-    "license": "BSD",
-    "bin": {
-        "rembrant": "./bin/rembrant"
-    }
+  "name": "rembrant",
+  "description": "Photo library software",
+  "version": "0.0.1",
+  "author": "Honza Pokorny <https://github.com/honza>",
+  "repository": {
+    "url": "git://github.com/honza/rembrant.git",
+    "type": "git"
+  },
+  "dependencies": {
+    "coffee-script": ">= 1.1.2",
+    "async": ">= 0.1.15",
+    "imagemagick": ">= 0.1.2",
+    "commander": ">= 0.5.1",
+    "underscore": ">= 1.2.3",
+    "express": ">= 2.5.3",
+    "eco": "1.0.3",
+    "node-thumbnail": ">= 0.2.0"
+  },
+  "engines": {
+    "node": ">= 0.4.11 < 0.7.0"
+  },
+  "license": "BSD",
+  "bin": {
+    "rembrant": "./bin/rembrant"
+  }
 }
