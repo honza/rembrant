@@ -22,7 +22,6 @@ Advantages
 Disadvantages
 -------------
 
-* You have to run a local server (you need to be handy with the terminal)
 * The gallery can only be hosted on a subdomain (e.g.
   `http://gallery.example.com`, but not `http://example.com`)
 
@@ -31,6 +30,14 @@ Installation
 
 1. Install [node.js][2], [npm][3] and [imagemagick][4].
 2. `npm install rembrant`
+
+Dev installation
+----------------
+
+1. `git clone git://github.com/honza/rembrant.git`
+2. `cd rembrant`
+3. `npm install`
+4. `coffee rembrant.coffee`
 
 Usage
 -----
