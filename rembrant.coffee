@@ -154,6 +154,8 @@ program.option '-i, --import'
 program.option '-s, --scan'
 program.option '-e, --export'
 program.option '-t, --thumbs'
+program.option '-n, --rename'
+program.option '-r, --serve'
 program.parse process.argv
 
 rembrant = new Rembrant 'library.json'
@@ -166,3 +168,37 @@ if program.export
 
 if program.import
   rembrant.importPhotos()
+
+if program.rename
+  rembrant.normalize()
+
+if program.serve
+  express = require("express")
+
+  app = express.createServer express.bodyParser(),
+    express.cookieParser(),
+    express.session({secret: "cvfrFRQW352rrvf4132"})
+
+  app.configure ->
+      @set('views', __dirname + '/views')
+      @set('view engine', 'jade')
+      app.use(express.static(__dirname + '/public'))
+      @use(@router)
+
+  routes =
+    index: (req, res) ->
+      photos = _.clone r.library.photos
+      res.render 'index',
+        title: 'Rembrant'
+        photos: photos.reverse()
+    image: (req, res) ->
+      filename = req.params.filename
+      fs.readFileSync __dirname + "/views/base.html", "utf-8"
+      p = "#{__dirname}/#{r.library.cache}/#{filename}"
+      fs.readFile p, "binary", (err, data) ->
+        res.end data, 'binary'
+
+  app.get '/', routes.index
+  app.get '/image/:filename', routes.image
+  console.log 'Serving http://localhost:8888'
+  app.listen(8888)
