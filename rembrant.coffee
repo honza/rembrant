@@ -53,7 +53,7 @@ class Rembrant
       source: @library.source
       destination: @library.cache
       suffix: '_800'
-      concurrency: 2
+      concurrency: 4
       width: 800
     , ->
       console.log 'done'
@@ -62,7 +62,7 @@ class Rembrant
       source: @library.source
       destination: @library.cache
       suffix: '_100'
-      concurrency: 2
+      concurrency: 4
       width: 100
     , ->
       console.log 'done'
