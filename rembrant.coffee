@@ -1,5 +1,5 @@
 # Rembrant - photo gallery software
-# (c) 2011 - Honza Pokorny - All rights reserved
+# (c) 2012 - Honza Pokorny - All rights reserved
 # Freely available under the terms of the BSD license
 # https://github.com/honza/rembrant
 
@@ -34,7 +34,7 @@ class Rembrant
   constructor: (filename) ->
     if not path.existsSync filename
       console.log "Path doesn't exist, creating..."
-      do @createLibrary
+      @createLibrary()
       return
 
     @library = fs.readFileSync filename, 'utf-8'
@@ -85,13 +85,13 @@ class Rembrant
 
     @library.photos = photos
 
-    do @ensureExif
-    # do @makeThumbs
+    @ensureExif()
+    @makeThumbs()
 
   ensureExif: ->
     async.concatSeries @library.photos, exif.readExifImage, (err, list) =>
       console.log 'done'
-      do @save
+      @save()
 
   scan: ->
     files = fs.readdirSync @library.source
@@ -131,8 +131,7 @@ class Rembrant
     template = fs.readFileSync __dirname + "/views/single.html", "utf-8"
     for photo in @library.photos
       html = eco.render template, photo: photo
-      fs.writeFileSync 
-      @finalizeFile html, "build/#{do photo.getHtmlName}"
+      @finalizeFile html, "build/#{photo.getHtmlName()}"
 
   finalizeFile: (content, filename) ->
     rendered = eco.render baseTemplate, content: content
@@ -143,9 +142,9 @@ class Rembrant
       console.log 'done'
 
   export: ->
-    do @generateIndex
-    do @generateAlbums
-    do @generatePages
+    @generateIndex
+    @generateAlbums
+    @generatePages
 
 
 program = require 'commander'
@@ -157,13 +156,13 @@ program.option '-e, --export'
 program.option '-t, --thumbs'
 program.parse process.argv
 
-r = new Rembrant 'library.json'
+rembrant = new Rembrant 'library.json'
 
 if program.thumbs
-  do r.makeThumbs
+  rembrant.makeThumbs()
 
 if program.export
-  do r.export
+  rembrant.export()
 
 if program.import
-  do r.importPhotos
+  rembrant.importPhotos()
