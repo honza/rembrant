@@ -74,7 +74,7 @@ hasThumbs = (importPath) ->
         false
 
 copyFilesToDone = (filenames, importPath, callback) ->
-    options = 
+    options =
         cwd: importPath
 
     q = async.queue (task, callback) ->

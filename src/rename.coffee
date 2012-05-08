@@ -26,65 +26,65 @@ directory = null
 globalCallback = null
 
 readFiles = (dir) ->
-  fs.readdirSync dir
+    fs.readdirSync dir
 
 getCaptureDate = (file) ->
-  capture = file['Exif.Photo.DateTimeOriginal']
-  captureDate = capture.split(' ')[0]
-  captureDate = captureDate.replace /:/g, ''
-  captureDate
+    capture = file['Exif.Photo.DateTimeOriginal']
+    captureDate = capture.split(' ')[0]
+    captureDate = captureDate.replace /:/g, ''
+    captureDate
 
 sortData = ->
 
-  for file in data
-    captureDate = getCaptureDate file
+    for file in data
+        captureDate = getCaptureDate file
 
-    if captureDate in _.keys dates
-      dates[captureDate]++
-    else
-      dates[captureDate] = 1
+        if captureDate in _.keys dates
+            dates[captureDate]++
+        else
+            dates[captureDate] = 1
 
-    sorted.push
-      file: file
-      captureDate: captureDate
-      position: dates[captureDate]
+        sorted.push
+            file: file
+            captureDate: captureDate
+            position: dates[captureDate]
 
-  startRenaming sorted, dates
+    startRenaming sorted, dates
 
 startRenaming = (filenames, dates) ->
-  for file in filenames
-    num = pad file.position
-    newName = "#{directory}/#{file.captureDate}_#{num}.jpg"
-    oldName = file.file.filename
-    fs.renameSync oldName, newName
+    for file in filenames
+        num = pad file.position
+        newName = "#{directory}/#{file.captureDate}_#{num}.jpg"
+        oldName = file.file.filename
+        fs.renameSync oldName, newName
 
-  do globalCallback
+    do globalCallback
 
 pad = (n) ->
-  if n < 10
-    return '000' + n
+    if n < 10
+        return '000' + n
 
-  if n < 100
-    return '00' + n
+    if n < 100
+        return '00' + n
 
-  if n < 1000
-    return '0' + n
+    if n < 1000
+        return '0' + n
 
-  n
+    n
 
 exports.renameFilesInDirectory = (dir, callback) ->
-  directory = dir
-  filenames = readFiles dir
-  fullFilenames = []
-  globalCallback = callback
+    directory = dir
+    filenames = readFiles dir
+    fullFilenames = []
+    globalCallback = callback
 
-  for file in filenames
-    if file is '.DS_Store'
-      continue
+    for file in filenames
+        if file is '.DS_Store'
+            continue
 
-    fullFilenames.push "#{dir}/#{file}"
+        fullFilenames.push "#{dir}/#{file}"
 
-  # I wish there was an `in paralel with a limit` - concatSeries is a bit slow
-  async.concatSeries fullFilenames, exif.readExif, (err, list) ->
-    data = list
-    do sortData
+    # I wish there was an `in paralel with a limit` - concatSeries is a bit slow
+    async.concatSeries fullFilenames, exif.readExif, (err, list) ->
+        data = list
+        do sortData
