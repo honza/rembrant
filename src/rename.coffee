@@ -58,7 +58,7 @@ startRenaming = (filenames, dates) ->
         oldName = file.file.filename
         fs.renameSync oldName, newName
 
-    do globalCallback
+    globalCallback()
 
 pad = (n) ->
     if n < 10
@@ -87,4 +87,4 @@ exports.renameFilesInDirectory = (dir, callback) ->
     # I wish there was an `in paralel with a limit` - concatSeries is a bit slow
     async.concatSeries fullFilenames, exif.readExif, (err, list) ->
         data = list
-        do sortData
+        sortData()
