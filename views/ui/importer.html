@@ -1,0 +1,10 @@
+<h1>Importer</h1>
+
+<input id="done" value="Finish" type="button" />
+
+<% for file in @files: %>
+<div class="image-box">
+    <img id="<%= file.filename %>" class="image" src="/importer/image/<%= file.thumb %>" />
+    <img class="icon" src="/images/close.png" />
+</div>
+<% end %>

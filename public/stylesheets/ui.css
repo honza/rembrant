@@ -1,0 +1,18 @@
+body {
+    font-family: 'Helvetica';
+    padding: 20px;
+    width: 900px;
+    margin: 0 auto;
+}
+
+.icon {
+  float: right;
+}
+
+
+.image-box {
+  padding: 20px;
+  clear: both;
+  border: 1px solid #ececec;
+  margin: 10px 0;
+}

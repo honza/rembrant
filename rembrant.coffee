@@ -150,7 +150,7 @@ class Rembrant
 program = require 'commander'
 
 program.version '0.0.1'
-program.option '-i, --import'
+program.option '-i, --import [path]'
 program.option '-s, --scan'
 program.option '-e, --export'
 program.option '-t, --thumbs'
@@ -158,21 +158,7 @@ program.option '-n, --rename'
 program.option '-r, --serve'
 program.parse process.argv
 
-rembrant = new Rembrant 'library.json'
-
-if program.thumbs
-  rembrant.makeThumbs()
-
-if program.export
-  rembrant.export()
-
-if program.import
-  rembrant.importPhotos()
-
-if program.rename
-  rembrant.normalize()
-
-if program.serve
+startApp = (importPath) ->
   express = require("express")
 
   app = express.createServer express.bodyParser(),
@@ -187,18 +173,44 @@ if program.serve
 
   routes =
     index: (req, res) ->
-      photos = _.clone r.library.photos
+      photos = _.clone rembrant.library.photos
       res.render 'index',
         title: 'Rembrant'
         photos: photos.reverse()
     image: (req, res) ->
       filename = req.params.filename
-      fs.readFileSync __dirname + "/views/base.html", "utf-8"
-      p = "#{__dirname}/#{r.library.cache}/#{filename}"
+      p = "#{__dirname}/#{rembrant.library.cache}/#{filename}"
       fs.readFile p, "binary", (err, data) ->
         res.end data, 'binary'
 
   app.get '/', routes.index
   app.get '/image/:filename', routes.image
+
+  # Importer
+  importer = require('./src/importer.coffee').main(app, importPath)
+  # console.log require('./src/importer.coffee')
+
   console.log 'Serving http://localhost:8888'
   app.listen(8888)
+
+# Kick it off
+rembrant = new Rembrant 'library.json'
+
+if program.thumbs
+  rembrant.makeThumbs()
+
+if program.export
+  rembrant.export()
+
+if program.import and program.import is true
+  rembrant.importPhotos
+
+if program.import and program.import isnt true
+  imagePath = program.import
+  startApp imagePath
+
+if program.rename
+  rembrant.normalize()
+
+if program.serve
+  startApp()
