@@ -147,16 +147,6 @@ class Rembrant
         @generatePages
 
 
-program = require 'commander'
-
-program.version '0.0.1'
-program.option '-i, --import [path]'
-program.option '-s, --scan'
-program.option '-e, --export'
-program.option '-t, --thumbs'
-program.option '-n, --rename'
-program.option '-r, --serve'
-program.parse process.argv
 
 startApp = (importPath) ->
     express = require("express")
@@ -187,30 +177,45 @@ startApp = (importPath) ->
     app.get '/image/:filename', routes.image
 
     # Importer
-    importer = require('./src/importer.coffee').main(app, importPath)
-    # console.log require('./src/importer.coffee')
+    if importPath
+        importer = require('./src/importer.coffee').main(app, importPath)
 
     console.log 'Serving http://localhost:8888'
     app.listen(8888)
 
+
+runFromCli = ->
+    program = require 'commander'
+
+    program.version '0.0.1'
+    program.option '-i, --import [path]'
+    program.option '-s, --scan'
+    program.option '-e, --export'
+    program.option '-t, --thumbs'
+    program.option '-n, --rename'
+    program.option '-r, --serve'
+    program.parse process.argv
+
+    rembrant = new Rembrant 'library.json'
+
+    if program.thumbs
+        rembrant.makeThumbs()
+
+    if program.export
+        rembrant.export()
+
+    if program.import and program.import is true
+        rembrant.importPhotos
+
+    if program.import and program.import isnt true
+        imagePath = program.import
+        startApp imagePath
+
+    if program.rename
+        rembrant.normalize()
+
+    if program.serve
+        startApp()
+
 # Kick it off
-rembrant = new Rembrant 'library.json'
-
-if program.thumbs
-    rembrant.makeThumbs()
-
-if program.export
-    rembrant.export()
-
-if program.import and program.import is true
-    rembrant.importPhotos
-
-if program.import and program.import isnt true
-    imagePath = program.import
-    startApp imagePath
-
-if program.rename
-    rembrant.normalize()
-
-if program.serve
-    startApp()
+runFromCli()
