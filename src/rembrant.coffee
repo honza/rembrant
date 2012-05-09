@@ -9,12 +9,12 @@ _ = require 'underscore'
 {spawn, exec} = require 'child_process'
 async = require 'async'
 eco = require 'eco'
-thumb = require('./src/thumbnail.js').thumb
-Photo = require('./src/photo.coffee').Photo
-exif = require './src/exif.coffee'
-rename = require './src/rename.coffee'
+thumb = require('./thumbnail').thumb
+Photo = require('./photo').Photo
+exif = require './exif'
+rename = require './rename'
 
-baseTemplate = fs.readFileSync __dirname + "/views/base.html", "utf-8"
+baseTemplate = fs.readFileSync __dirname + "/../views/base.html", "utf-8"
 
 library =
     source: 'test-photos'
@@ -31,7 +31,7 @@ library =
 
 class Rembrant
 
-    constructor: (filename) ->
+    constructor: (filename, @cwd) ->
         if not path.existsSync filename
             console.log "Path doesn't exist, creating..."
             @createLibrary()
@@ -111,27 +111,27 @@ class Rembrant
             image.exif['Exif.Photo.DateTimeOriginal']
 
     generateIndex: ->
-        template = fs.readFileSync __dirname + "/views/front.html", "utf-8"
+        template = fs.readFileSync __dirname + "/../views/front.html", "utf-8"
         html = eco.render template, albums: @library.albums
         @finalizeFile html, 'build/index.html'
 
     generateAlbums: ->
-        template = fs.readFileSync __dirname + "/views/index.html", "utf-8"
+        template = fs.readFileSync __dirname + "/../views/index.html", "utf-8"
         for album in @library.albums
             photos = _.filter @library.photos, (p) ->
                 album.id in p.albums
             html = eco.render template, photos: photos
-            @finalizeFile html, "build/album-#{album.id}.html"
+            @finalizeFile html, "/../build/album-#{album.id}.html"
 
         # and all images on one screen
         html = eco.render template, photos: @library.photos
-        @finalizeFile html, 'build/all.html'
+        @finalizeFile html, '/../build/all.html'
 
     generatePages: ->
-        template = fs.readFileSync __dirname + "/views/single.html", "utf-8"
+        template = fs.readFileSync __dirname + "/../views/single.html", "utf-8"
         for photo in @library.photos
             html = eco.render template, photo: photo
-            @finalizeFile html, "build/#{photo.getHtmlName()}"
+            @finalizeFile html, "/../build/#{photo.getHtmlName()}"
 
     finalizeFile: (content, filename) ->
         rendered = eco.render baseTemplate, content: content
@@ -148,7 +148,7 @@ class Rembrant
 
 
 
-startApp = (importPath) ->
+startApp = (rembrant, importPath) ->
     express = require("express")
 
     app = express.createServer express.bodyParser(),
@@ -156,9 +156,9 @@ startApp = (importPath) ->
         express.session({secret: "cvfrFRQW352rrvf4132"})
 
     app.configure ->
-            @set('views', __dirname + '/views')
+            @set('views', __dirname + '/../views')
             @set('view engine', 'jade')
-            app.use(express.static(__dirname + '/public'))
+            app.use(express.static(__dirname + '/../public'))
             @use(@router)
 
     routes =
@@ -169,7 +169,7 @@ startApp = (importPath) ->
                 photos: photos.reverse()
         image: (req, res) ->
             filename = req.params.filename
-            p = "#{__dirname}/#{rembrant.library.cache}/#{filename}"
+            p = "#{rembrant.cwd}/#{rembrant.library.cache}/#{filename}"
             fs.readFile p, "binary", (err, data) ->
                 res.end data, 'binary'
 
@@ -178,13 +178,13 @@ startApp = (importPath) ->
 
     # Importer
     if importPath
-        importer = require('./src/importer.coffee').main(app, importPath)
+        importer = require('./importer').main(app, importPath)
 
     console.log 'Serving http://localhost:8888'
     app.listen(8888)
 
 
-runFromCli = ->
+exports.runFromCli = ->
     program = require 'commander'
 
     program.version '0.0.1'
@@ -196,7 +196,7 @@ runFromCli = ->
     program.option '-r, --serve'
     program.parse process.argv
 
-    rembrant = new Rembrant 'library.json'
+    rembrant = new Rembrant 'library.json', process.cwd()
 
     if program.thumbs
         rembrant.makeThumbs()
@@ -209,13 +209,10 @@ runFromCli = ->
 
     if program.import and program.import isnt true
         imagePath = program.import
-        startApp imagePath
+        startApp rembrant, imagePath
 
     if program.rename
         rembrant.normalize()
 
     if program.serve
-        startApp()
-
-# Kick it off
-runFromCli()
+        startApp rembrant

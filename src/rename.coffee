@@ -16,7 +16,7 @@
 fs = require 'fs'
 _ = require 'underscore'
 async = require 'async'
-exif = require './exif.coffee'
+exif = require './exif'
 
 filenames = []
 data = []

@@ -5,4 +5,4 @@ var fs   = require('fs');
 var root = path.join(path.dirname(fs.realpathSync(__filename)), '../');
 var lib  = path.join(root, 'lib');
 
-require(lib + '/app.js').run()
+require(lib + '/rembrant.js').runFromCli()
