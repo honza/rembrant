@@ -18,10 +18,10 @@ fs = require 'fs'
 path = require 'path'
 eco = require 'eco'
 _ = require 'underscore'
-thumb = require('./thumbnail.js').thumb
+thumb = require('./thumbnail').thumb
 async = require 'async'
 {exec} = require 'child_process'
-{renameFilesInDirectory} = require './rename.coffee'
+{renameFilesInDirectory} = require './rename'
 
 # A bit of code duplication from ``photo.coffee``
 class Photo
