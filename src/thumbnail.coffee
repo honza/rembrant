@@ -71,7 +71,7 @@ run = (settings) ->
 
     queue = createQueue settings
 
-    for image in images
+    _.each images, (image) ->
         options =
             srcPath: settings.source + '/' + image
             width: settings.width
@@ -97,6 +97,6 @@ exports.thumb = (options, callback) ->
         return
 
     if callback
-        done = callback
+        settings.done = callback
 
     run settings

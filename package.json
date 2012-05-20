@@ -14,8 +14,7 @@
     "commander": ">= 0.5.1",
     "underscore": ">= 1.2.3",
     "express": ">= 2.5.3",
-    "eco": "1.0.3",
-    "node-thumbnail": ">= 0.2.0"
+    "eco": "1.0.3"
   },
   "engines": {
     "node": ">= 0.4.11 < 0.7.0"
