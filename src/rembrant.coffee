@@ -113,7 +113,7 @@ class Rembrant
     generateIndex: ->
         template = fs.readFileSync __dirname + "/../views/front.html", "utf-8"
         html = eco.render template, albums: @library.albums
-        @finalizeFile html, 'build/index.html'
+        @finalizeFile html, 'index.html'
 
     generateAlbums: ->
         template = fs.readFileSync __dirname + "/../views/index.html", "utf-8"
@@ -121,30 +121,31 @@ class Rembrant
             photos = _.filter @library.photos, (p) ->
                 album.id in p.albums
             html = eco.render template, photos: photos
-            @finalizeFile html, "/../build/album-#{album.id}.html"
+            @finalizeFile html, "album-#{album.id}.html"
 
         # and all images on one screen
         html = eco.render template, photos: @library.photos
-        @finalizeFile html, '/../build/all.html'
+        @finalizeFile html, 'all.html'
 
     generatePages: ->
         template = fs.readFileSync __dirname + "/../views/single.html", "utf-8"
         for photo in @library.photos
+            console.log photo.filename
             html = eco.render template, photo: photo
-            @finalizeFile html, "/../build/#{photo.getHtmlName()}"
+            @finalizeFile html, "#{photo.getHtmlName()}"
 
     finalizeFile: (content, filename) ->
         rendered = eco.render baseTemplate, content: content
-        fs.writeFileSync filename, rendered
+        fs.writeFileSync @cwd + "/build/" + filename, rendered
 
     normalize: ->
         rename.renameFilesInDirectory @library.source, ->
             console.log 'done'
 
     export: ->
-        @generateIndex
-        @generateAlbums
-        @generatePages
+        @generateIndex()
+        @generateAlbums()
+        @generatePages()
 
 
 
