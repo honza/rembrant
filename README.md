@@ -28,8 +28,9 @@ Disadvantages
 Installation
 ------------
 
-1. Install [node.js][2], [npm][3] and [imagemagick][4].
-2. `npm install rembrant`
+1. Install [node.js][2] and [npm][3]
+2. `brew install imagemagick exiv2`
+3. `npm install rembrant`
 
 Dev installation
 ----------------
@@ -37,7 +38,6 @@ Dev installation
 1. `git clone git://github.com/honza/rembrant.git`
 2. `cd rembrant`
 3. `npm install`
-4. `coffee rembrant.coffee`
 
 Usage
 -----
