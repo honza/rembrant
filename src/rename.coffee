@@ -52,12 +52,16 @@ sortData = ->
     startRenaming sorted, dates
 
 startRenaming = (filenames, dates) ->
+    map = {}
+
     for file in filenames
         num = pad file.position
         newName = "#{directory}/#{file.captureDate}_#{num}.jpg"
         oldName = file.file.filename
         fs.renameSync oldName, newName
+        map[oldName] = newName
 
+    fs.writeFileSync "map.json", JSON.stringify(map), 'utf-8'
     globalCallback()
 
 pad = (n) ->
@@ -79,7 +83,7 @@ exports.renameFilesInDirectory = (dir, callback) ->
     globalCallback = callback
 
     for file in filenames
-        if file is '.DS_Store'
+        if file.charAt(0) is '.'
             continue
 
         fullFilenames.push "#{dir}/#{file}"

@@ -10,11 +10,13 @@
   "dependencies": {
     "coffee-script": ">= 1.1.2",
     "async": ">= 0.1.15",
-    "imagemagick": ">= 0.1.2",
     "commander": ">= 0.5.1",
     "underscore": ">= 1.2.3",
     "express": ">= 2.5.3",
-    "eco": "1.0.3"
+    "eco": "1.1.0-rc-3",
+    "knox": "0.0.9",
+    "cloudfiles": "0.3.3",
+    "findit": "0.1.2"
   },
   "engines": {
     "node": ">= 0.4.11 < 0.7.0"

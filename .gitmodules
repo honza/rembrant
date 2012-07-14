@@ -1,0 +1,3 @@
+[submodule "vendor/node-imagemagick"]
+	path = vendor/node-imagemagick
+	url = git://github.com/rsms/node-imagemagick.git

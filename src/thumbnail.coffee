@@ -7,7 +7,7 @@ fs = require 'fs'
 path = require 'path'
 crypto = require 'crypto'
 
-im = require 'imagemagick'
+im = require '../vendor/node-imagemagick/imagemagick'
 async = require 'async'
 _ = require 'underscore'
 
@@ -51,7 +51,10 @@ createQueue = (settings) ->
             task.options.dstPath = settings.destination + '/' + base +
                 settings.suffix + ext
 
-            im.resize task.options, (err, stdout, stderr) -> callback()
+            if path.existsSync task.options.dstPath
+                callback()
+            else
+                im.resize task.options, (err, stdout, stderr) -> callback()
 
     , settings.concurrency
 

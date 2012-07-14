@@ -1,3 +1,25 @@
-h1= title
-each photo in photos
-    img(src='/image/' + photo.getThumb(100))
+div.container-fluid
+    div.navbar.navbar-fixed-top
+        div.navbar-inner
+            div#top.container-fluid
+                a.brand Rembrant
+                ul.nav
+                    li
+                        a#home(href="#") Home
+                    li
+                        a#add-album(href="#") Add album
+    div.row-fluid
+        div#side.span3
+            ul#albums.nav.nav-list
+                li.nav-header Albums
+        div#root.span9
+
+div#addAlbumModal.modal.hide
+    div.modal-header
+        h3 Add a new album
+    div.modal-body
+        p Mle text
+    div.modal-footer
+        a.btn(href="#") Close
+        a.btn.btn-primary(href="#") Add
+        

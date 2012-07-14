@@ -1,9 +1,0 @@
-<h1>Photo gallery</h1>
-
-<h2>Albums</h2>
-<ul>
-    <% for album in @albums: %>
-        <li><a href="album-<%= album.id %>.html"><%= album.name %></a></li>
-    <% end %>
-    <li><a href="all.html">All</a></li>
-</ul>

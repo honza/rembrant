@@ -92,7 +92,14 @@ License
 
 BSD. Short and sweet. Check the `LICENSE` file.
 
+Note about the name
+-------------------
+
+Yes, the [painter][5]'s name is Rembrandt.  The spelling is awkward.  And this
+spelling will make it easier to Google.  I hope.
+
 [1]: http://aws.amazon.com/s3/
 [2]: http://nodejs.org/
 [3]: http://npmjs.org/
 [4]: http://imagemagick.org/
+[5]: http://en.wikipedia.org/wiki/Rembrandt

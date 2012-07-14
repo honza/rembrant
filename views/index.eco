@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+    <title>Rembrant</title>
+
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css" />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+
+    <script src="/javascripts/jquery.js"></script>
+    <script src="/javascripts/underscore.js"></script>
+    <script src="/javascripts/backbone.js"></script>
+    <script src="/javascripts/bootstrap-modal.js"></script>
+    <script src="/javascripts/client.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div id="top" class="container-fluid">
+                <a href="#" class="brand">Rembrant</a>
+                <ul class="nav">
+                    <li><a href="#" id="home">Home</a></li>
+                    <li><a href="#" id="all-photos">All photos</a></li>
+                    <li><a href="#" id="add-album">Add album</a></li>
+                </ul>
+                <ul class="nav pull-right">
+                    <li><a id="selection-action" href="#"></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>    
+    <div class="row-fluid">
+        <div id="side" class="span3">
+            <ul id="albums" class="nav nav-list">
+                <li class="nav-header">Albums</li>
+            </ul>
+        </div>
+        <ul id="root" class="thumbnails span9">
+        </ul>
+    </div>
+</div>
+
+<div id="addAlbumModal" class="modal hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3>Add a new album</h3>
+    </div>
+
+    <div class="modal-body">
+        <input type="text" class="input-medium" placeholder="Album name" />
+    </div>
+
+    <div class="modal-footer">
+        <a href="#" class="btn cancel" data-dismiss="modal" >Close</a>
+        <a href="#" class="btn btn-primary save">Save</a>
+    </div>
+</div>
+
+<div id="addSelectionToAlbum" class="modal hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3>Add selection to album</h3>
+    </div>
+
+    <div class="modal-body">
+        <!-- <input type="text" class="input-medium" placeholder="Album name" /> -->
+        <select>
+            <option>Unsorted</option>
+        </select>
+    </div>
+
+    <div class="modal-footer">
+        <a href="#" class="btn cancel" data-dismiss="modal" >Close</a>
+        <a href="#" class="btn btn-primary save">Save</a>
+    </div>
+</div>
+
+
+</body>
+</html>

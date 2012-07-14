@@ -1,3 +1,7 @@
+<ul class="thumbnails">
 <% for photo in @photos: %>
-    <a href="<%= photo.getHtmlName() %>"><img src="../cache/<%= photo.getThumb 100 %>" /></a>
+  <li class="span3">
+    <a class="thumbnail" href="<%= photo.getHtmlName() %>"><img src="../cache/<%= photo.getThumb 100 %>" /></a>
+  </li>
 <% end %>
+</ul>
