@@ -51,7 +51,7 @@ createQueue = (settings) ->
             task.options.dstPath = settings.destination + '/' + base +
                 settings.suffix + ext
 
-            if path.existsSync task.options.dstPath
+            if fs.existsSync task.options.dstPath
                 callback()
             else
                 im.resize task.options, (err, stdout, stderr) -> callback()
@@ -93,7 +93,7 @@ exports.thumb = (options, callback) ->
         options.source = options.args[0]
         options.destination = options.args[1]
 
-    if path.existsSync(options.source) and path.existsSync(options.destination)
+    if fs.existsSync(options.source) and fs.existsSync(options.destination)
         settings = _.defaults options, defaults
     else
         console.log "Origin or destination doesn't exist."

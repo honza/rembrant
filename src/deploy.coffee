@@ -103,15 +103,13 @@ exports.deploy = (library, cwd) ->
 
     cdn = new CDN('aws', cwd, key, secret, bucket)
 
-    if path.existsSync "s3map.json"
+    if fs.existsSync "s3map.json"
         map = JSON.parse fs.readFileSync "s3map.json", "utf-8"
     else
         map = {}
 
     files = getBuildFiles(library, cwd)
     difference = _.difference files, _.keys map
-
-    console.log difference
 
     q = createQueue (data) ->
 

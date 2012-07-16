@@ -33,7 +33,7 @@ library =
 class Rembrant
 
     constructor: (filename, @cwd) ->
-        if not path.existsSync filename
+        if not fs.existsSync filename
             console.log "Path doesn't exist, creating..."
             @createLibrary()
             return
@@ -57,7 +57,7 @@ class Rembrant
 
     makeThumbs: ->
 
-        if not path.existsSync @library.cache
+        if not fs.existsSync @library.cache
             fs.mkdirSync @library.cache
 
         thumb
@@ -189,7 +189,7 @@ class Rembrant
         @save()
 
     export: ->
-        if not path.existsSync @cwd + "/build"
+        if not fs.existsSync @cwd + "/build"
             fs.mkdirSync @cwd + "/build"
 
         @generateIndex()
@@ -291,6 +291,7 @@ exports.runFromCli = ->
 
     if program.scan
         rembrant.scan()
+        rembrant.makeThumbs()
 
     if program.export
         rembrant.export()
